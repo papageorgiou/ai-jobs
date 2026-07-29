@@ -24,3 +24,7 @@ __pycache__/
 # Pipeline outputs
 output/*.pkl
 output/shards/
+
+# Quarto intermediates
+report.typ
+report_files/
