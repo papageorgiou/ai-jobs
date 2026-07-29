@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Python (uv)
+.venv/
+__pycache__/
+*.py[cod]
+
+# R
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+
+# Editors
+.vscode/
+.idea/
