@@ -1,0 +1,126 @@
+Job Title,Primary Functional Category,Seniority Level,Domain Focus
+Chief AI Officer,Executive & Strategy,C-Suite,Enterprise Strategy & Governance
+VP of Artificial Intelligence,Executive & Strategy,Executive,Organizational AI Leadership
+Director of AI Engineering,Executive & Strategy,Director,Engineering Management
+Head of AI Strategy,Executive & Strategy,Director,Business Transformation
+Chief Responsible AI Officer,Executive & Strategy,C-Suite,Ethics & Compliance
+Principal AI Architect,Architecture & Design,Principal,Enterprise System Design
+Enterprise AI Solutions Architect,Architecture & Design,Senior,Client Infrastructure
+AI Systems Architect,Architecture & Design,Senior,Distributed Systems
+Agentic AI Architect,Architecture & Design,Principal,Agentic Frameworks
+Artificial Intelligence Architect,Architecture & Design,Principal,Enterprise Infrastructure
+AI Engineer,Core Technical Engineering,Mid-Senior,API & Product Integration
+Applied AI Engineer,Core Technical Engineering,Mid-Senior,Applied Product Features
+Senior AI Software Engineer,Core Technical Engineering,Senior,Full Stack AI Applications
+Generative AI Engineer,Core Technical Engineering,Mid-Senior,Generative Media & Text
+Artificial Intelligence Engineer,Core Technical Engineering,Mid-Senior,Algorithmic Software Engineering
+Lead AI Engineer,Core Technical Engineering,Lead,Technical Oversight
+Staff AI Engineer,Core Technical Engineering,Staff,Core Architecture
+Principal AI Engineer,Core Technical Engineering,Principal,Enterprise Systems
+AI Agent Engineer,Core Technical Engineering,Mid-Senior,Task Automation Agents
+AI Delivery Engineer,Core Technical Engineering,Senior,End-to-End Solution Shipping
+AI Solutions Engineer,Core Technical Engineering,Mid-Senior,Customer Technical Integration
+Forward Deployed AI Engineer,Core Technical Engineering,Senior,Client-Embedded Engineering
+AI Platform Engineer,Infrastructure & Operations,Senior,Internal Developer Platforms
+AI Infrastructure Engineer,Infrastructure & Operations,Senior,Compute & GPU Management
+AI Reliability Engineer,Infrastructure & Operations,Senior,Production SRE & Monitoring
+AI SRE,Infrastructure & Operations,Mid-Senior,System Uptime & Monitoring
+AI Compute Infrastructure Lead,Infrastructure & Operations,Lead,Data Center Compute
+AI Research Scientist,Research & Foundational Science,Senior,Algorithmic Research
+AI Researcher,Research & Foundational Science,Mid-Senior,Theoretical AI
+Artificial Intelligence Research Scientist,Research & Foundational Science,Senior,Foundational Model R&D
+AI Research Engineer,Research & Foundational Science,Senior,Lab-to-Production Research
+Member of Technical Staff (MTS) - AI Research,Research & Foundational Science,Staff,Frontier Model Research
+Multimodal AI Scientist,Research & Foundational Science,Senior,Cross-Modal Learning
+AI Alignment Researcher,Research & Foundational Science,Senior,Safety & Value Alignment
+AI Alignment Engineer,Research & Foundational Science,Mid-Senior,Model Alignment Verification
+AI Safety Researcher,Research & Foundational Science,Senior,Frontier Model Risk Mitigation
+AI Safety Engineer,Research & Foundational Science,Mid-Senior,Output Guardrails
+AI Evaluation Engineer,Evaluation & Safety,Senior,Benchmark & Output Testing
+AI Security Engineer,Evaluation & Safety,Senior,Vulnerability & Injection Defense
+AI Prompt Engineer,Core Technical Engineering,Mid,Prompt Optimization & Context
+Senior AI Prompt Engineer,Core Technical Engineering,Senior,Advanced Context Engineering
+Lead AI Prompt Engineer,Core Technical Engineering,Lead,Context Architecture Strategy
+AI Red Teamer,Evaluation & Safety,Senior,Adversarial Model Testing
+AI Quality Assurance Engineer,Evaluation & Safety,Mid-Senior,System Output Reliability
+AI Risk Officer,Governance & Ethics,Director,Enterprise Risk Management
+AI Ethicist,Governance & Ethics,Mid-Senior,Ethical Alignment
+AI Policy Analyst,Governance & Ethics,Mid-Senior,Regulatory Compliance
+Responsible AI Lead,Governance & Ethics,Lead,Corporate Responsibility
+AI Compliance Officer,Governance & Ethics,Mid-Senior,Legal & Regulatory Auditing
+Data Privacy Lead - AI Systems,Governance & Ethics,Lead,Data Protection & Privacy
+AI Governance Manager,Governance & Ethics,Manager,Framework Implementation
+AI Audit Specialist,Governance & Ethics,Mid,Model Transparency & Fairness
+AI Philosopher,Governance & Ethics,Senior,Human Value Alignment
+AI Ethics Researcher,Governance & Ethics,Senior,Ethical Framework Development
+AI Governance Lead,Governance & Ethics,Lead,Policy Enforcement
+AI Risk & Compliance Manager,Governance & Ethics,Manager,Regulatory Risk Mitigation
+AI Policy Director,Governance & Ethics,Director,Public Policy & Regulation
+AI Product Manager,Product & Program Management,Mid-Senior,AI Product Strategy
+Senior AI Technical Program Manager,Product & Program Management,Senior,Infrastructure & Delivery
+Responsible AI TPM,Product & Program Management,Senior,Ethics Lifecycle Management
+AI Infrastructure TPM,Product & Program Management,Senior,Compute Hardware Programs
+AI Business Analyst,Product & Program Management,Mid,Requirements & Automation
+AI Project Manager,Product & Program Management,Mid-Senior,AI Implementation
+AI Program Manager,Product & Program Management,Senior,Enterprise Rollouts
+AI Strategic Advisor,Product & Program Management,Senior,Executive Consulting
+AI UX Designer,Design & Creative,Mid-Senior,Conversational & Agent Interfaces
+Generative AI Designer,Design & Creative,Mid,Visual Asset Generation
+AI Art Director,Design & Creative,Lead,Creative Campaign Guidance
+AI Content Strategist,Design & Creative,Mid,Marketing Automation
+AI Content Creator,Design & Creative,Entry-Mid,Generative Copy & Media
+AI Chatbot Developer,Core Technical Engineering,Mid,Conversational Systems
+AI Business Automation Engineer,Core Technical Engineering,Senior,Enterprise Workflow Integration
+AI Creative Director,Design & Creative,Director,Generative Branding & Media
+AI Graphic Designer,Design & Creative,Mid,Visual Media Synthesis
+AI Copywriter,Design & Creative,Entry-Mid,Natural Language Generation
+AI Trainer,Data & Human Alignment,Entry-Mid,Data Labeling & Feedback
+AI Model Evaluator,Data & Human Alignment,Entry-Mid,RLHF & Response Ranking
+AI Operator,Operations & Support,Entry-Mid,Computer-Use Automation
+Healthcare AI Engineer,Healthcare & Medicine,Senior,Clinical Systems Development
+Medical Data Scientist - AI,Healthcare & Medicine,Senior,Health Data Modeling
+Healthcare AI Prompt Engineer,Healthcare & Medicine,Mid,Clinical Communications
+Healthcare AI Evaluator,Healthcare & Medicine,Mid,Medical Accuracy Verification
+Medical AI Trainer,Healthcare & Medicine,Mid,Clinical Model Alignment
+Clinical AI Reviewer,Healthcare & Medicine,Senior,Medical Safety Auditing
+Healthcare AI Project Manager,Healthcare & Medicine,Manager,Clinical Software Projects
+Healthcare AI Ethics Specialist,Healthcare & Medicine,Senior,Bioethics & Privacy
+AI/ML Applied Scientist - Life Sciences,Healthcare & Medicine,Senior,Drug Discovery & Genomics
+AI Solutions Architect - Healthcare,Healthcare & Medicine,Senior,EHR & Clinical Integration
+AI Nursing Specialist,Healthcare & Medicine,Mid-Senior,Patient Care Workflow AI
+AI Medical Imaging Specialist,Healthcare & Medicine,Senior,Radiology & Diagnostics AI
+AI Healthcare Systems Consultant,Healthcare & Medicine,Senior,Hospital Workflow Optimization
+AI Financial Analyst,Finance & Fintech,Mid-Senior,Automated Financial Modeling
+FinTech AI Data Analyst,Finance & Fintech,Mid,Transaction Analytics
+AI Fraud Detection Analyst,Finance & Fintech,Mid-Senior,Risk & Anomaly Detection
+Algorithmic AI Trader,Finance & Fintech,Senior,Automated Execution Systems
+FinTech AI Developer,Finance & Fintech,Mid-Senior,Banking API & Model Integration
+AI FinTech Risk Specialist,Finance & Fintech,Senior,Credit & Compliance Modeling
+AI Quantitative Analyst,Finance & Fintech,Senior,Algorithmic Finance Models
+AI Risk Modeler - Banking,Finance & Fintech,Senior,Credit Risk & Compliance
+AI Lawyer,Legal & Professional,Senior,Legal Research Automation
+Legal AI Prompt Specialist,Legal & Professional,Mid,Contract Analysis & Drafting
+AI Patent Attorney,Legal & Professional,Senior,Intellectual Property & Patents
+AI Legal Consultant,Legal & Professional,Senior,Regulatory Compliance Advice
+AI Technical Recruiter,Human Resources,Mid,Talent Acquisition
+AI Talent Acquisition Specialist,Human Resources,Mid-Senior,Executive Sourcing
+AI Innovation Manager,Strategy & Operations,Manager,Internal R&D Prototyping
+AI Developer Advocate,Developer Relations,Mid-Senior,Community & SDK Enablement
+AI Technical Writer,Communications,Mid,Model Documentation & API Guides
+AI Evangelist,Developer Relations,Senior,Model Ecosystem Advocacy
+Speech Scientist - AI,Research & Foundational Science,Senior,Voice Models & Synthesis
+Robotic Software R&D Engineer - AI,Core Technical Engineering,Senior,Autonomous Hardware
+Data Scientist - AI Specialization,Data & Analytics,Mid-Senior,Predictive Analytics
+Infosec Data Scientist - AI Infrastructure,Evaluation & Safety,Senior,Security Analytics
+AI Engineering Manager,Executive & Strategy,Manager,Technical Team Leadership
+Artificial Intelligence Specialist,Core Technical Engineering,Mid-Senior,Domain Implementation
+Artificial Intelligence Consultant,Strategy & Operations,Senior,Enterprise Solutions
+Artificial Intelligence Developer,Core Technical Engineering,Mid,Application Engineering
+Artificial Intelligence Strategy Consultant,Strategy & Operations,Senior,Corporate Roadmaps
+Artificial Intelligence Operations Lead,Infrastructure & Operations,Lead,Production Workflows
+AI Integration Engineer,Core Technical Engineering,Mid-Senior,Enterprise System Integration
+AI Cloud Architect,Architecture & Design,Senior,Cloud Compute Infrastructure
+AI Operations Manager,Operations & Support,Manager,Infrastructure & Workflow Execution
+AI Transformation Lead,Executive & Strategy,Director,Organizational Change Management
+VP of AI Engineering,Executive & Strategy,Executive,Engineering Leadership
+Head of AI Research,Executive & Strategy,Director,Research Vision & Execution
