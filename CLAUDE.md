@@ -6,9 +6,26 @@ analyses which titles are actually growing.
 
 Output feeds LinkedIn posts. Charts for publication live in the separate `posts` repo.
 
+## Two versions live side by side
+
+**v1** is the original study (1,052 titles, Aug 2022 - Jul 2026, pulled 2026-07-29):
+`output/`, `04_charts.R`, `report.qmd`, `INSIGHTS.md`.
+
+**v2** adds one title, `Forward Deployed Engineer`, and re-pulls (1,053 titles, Sep 2022 -
+Aug 2026, pulled 2026-08-20): `output_v2/`, `04_charts_v2.R`, `report_v2.qmd`,
+`INSIGHTS_v2.md`.
+
+v1 is frozen and must stay reproducible - do not edit `04_charts.R`, `report.qmd`,
+`INSIGHTS.md` or anything in `output/`. The Python pipeline is shared: `config.py` already
+reads `OUTPUT_DIR` and `MASTER_CSV` from the environment, so `00_prep` through `03_cluster`
+run unmodified for both. Only the chart script and report are duplicated, because several v1
+chart *conclusions* no longer hold and rewriting them in place would break v1.
+
 ## Run order
 
 Everything runs from the project root (path fallbacks in `config.py` are cwd-relative).
+
+v1:
 
 ```
 uv run build_master.py        # merge the four title lists -> ai_job_titles_master.csv
@@ -20,6 +37,21 @@ uv run 02_stats.py            # -> output/kw_trend_stats.parquet, rolling.parque
 uv run 03_cluster.py          # -> output/clusters.parquet
 Rscript 04_charts.R           # -> output/charts/*.png
 quarto render report.qmd      # -> report.pdf
+```
+
+v2 - same scripts, redirected by environment variables:
+
+```
+EXTRA_TITLES_CSV=ai_job_titles_fde.csv MASTER_OUT=ai_job_titles_master_v2.csv \
+  DROPPED_OUT=ai_job_titles_dropped_v2.csv uv run build_master.py
+
+export MASTER_CSV=ai_job_titles_master_v2.csv OUTPUT_DIR=output_v2/
+uv run 00_prep_keywords.py && uv run 00b_preflight.py && uv run 00c_full_pull.py
+uv run 01_clean.py && uv run 02_stats.py && uv run 03_cluster.py
+unset MASTER_CSV OUTPUT_DIR
+
+Rscript 04_charts_v2.R        # -> output_v2/charts/*.png (reads output_v2/ directly)
+quarto render report_v2.qmd   # -> report_v2.pdf
 ```
 
 Never skip `00b_preflight.py`. It exercises the same `get_volumes` entry point the real pull
@@ -44,6 +76,18 @@ despite matching the tool shape. Re-read those lists before publishing anything 
 the split.
 
 ## Conventions and gotchas
+
+**Adding a title that the AI-signal regex rejects.** Put it in a CSV and pass
+`EXTRA_TITLES_CSV`. Titles from that source bypass `ALLOW` / `ALLOW_EXACT` entirely. Do not
+loosen the regex instead - admitting a bare `engineer` readmits every ML and data-science
+title the brief excludes. This is how `Forward Deployed Engineer` enters v2, and it is worth
+remembering as a general failure mode: a rule-based inclusion filter misses exactly the roles
+whose names have not caught up with what they do.
+
+**The `claude_web` source lives in the Obsidian vault and moves.** It was at
+`OBSIDIAN/@INBOX/ai_job_titles.csv` when v1 ran and is now under `OBSIDIAN/Create post auto-
+AI jobs/`. `build_master.py` tries known locations in order; override with `WEB_TITLES_CSV`.
+A hardcoded path here breaks the whole build.
 
 **These titles are keywords, not seeds.** `00_prep_keywords.py` deliberately does *not* apply the
 seed-cleaning rules from the `get-search-data` skill's `00_prep_seeds.py`. The ≤4-word cap and
@@ -86,6 +130,18 @@ two-line titles collide with the subtitle. Titles are hand-wrapped through `wrap
 1,000, 1,300…), not exact counts, and volume can be inflated by bot or AI traffic. Spikes are
 flagged to `spikes_flagged.parquet` for review, never auto-dropped. Treat every figure as an
 order of magnitude with a direction.
+
+**Reported volume is a trailing 12-month mean, so it lies about step changes.**
+`avg_monthly_searches` lands near the midpoint of a step - `forward deployed engineer` reports
+18,100 while running at 38,033. v2 computes a `last3` (mean of the final three months) and
+ranks on it wherever the ranking is the point. Do not rank a universe containing a
+step-change term on the reported average.
+
+**A step change trips the spike detector by construction.** `SPIKE_RATIO` compares the max
+against the median of the whole 48-month series, so a term that was flat for years and then
+climbed scores enormously (`forward deployed engineer`: 68.6). The discriminator is duration -
+eighteen consecutive rising months is adoption, one anomalous month is not. Note that
+`context engineer` passed the same test in v1 and then reverted, so a pass is not a guarantee.
 
 ## Known rough edge
 
