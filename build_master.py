@@ -8,11 +8,21 @@ learning, data science, NLP, computer vision and speech titles do not.
 """
 
 import csv
+import os
 import re
 from pathlib import Path
 
 REPO = Path(__file__).parent
-WEB = Path("/Users/alexp/gd_alpapag/apclients/OBSIDIAN/@INBOX/ai_job_titles.csv")
+# The claude_web list lives in the Obsidian vault, which gets reorganised, so
+# resolve it against known locations instead of pinning one path. Override with
+# WEB_TITLES_CSV if it moves again.
+_VAULT = Path("/Users/alexp/gd_alpapag/apclients/OBSIDIAN")
+_WEB_CANDIDATES = [
+    _VAULT / "Create post auto- AI jobs" / "ai_job_titles.csv",
+    _VAULT / "@INBOX" / "ai_job_titles.csv",
+]
+WEB = Path(os.environ["WEB_TITLES_CSV"]) if os.environ.get("WEB_TITLES_CSV") else \
+    next((c for c in _WEB_CANDIDATES if c.exists()), _WEB_CANDIDATES[0])
 
 # Tokens that qualify a title as AI. Matched on word boundaries so "RAG" does not
 # fire on "fragment" and "AI" does not fire on "Maintenance".
@@ -43,6 +53,20 @@ SOURCES = [
     ("claude_web", WEB, "Job Title", "Category", None, None),
 ]
 
+# Optional extra source for a study variant, e.g. the v2 run that adds "Forward
+# Deployed Engineer". Titles from it bypass ALLOW / ALLOW_EXACT entirely: an
+# explicitly named addition is intentional by definition, and loosening the
+# regex to admit it would readmit the ML titles the brief excludes. Appended
+# last, so it never overrides metadata from the generated lists. Defaults are
+# unset, so the v1 build is byte-identical without these env vars.
+EXTRA_CSV = os.environ.get("EXTRA_TITLES_CSV")
+MASTER_OUT = os.environ.get("MASTER_OUT", "ai_job_titles_master.csv")
+DROPPED_OUT = os.environ.get("DROPPED_OUT", "ai_job_titles_dropped.csv")
+
+if EXTRA_CSV:
+    SOURCES.append(("manual", Path(EXTRA_CSV), "Job Title",
+                    "Category", "Seniority Level", "Domain Focus"))
+
 
 def norm(title):
     return re.sub(r"\s+", " ", title).strip()
@@ -58,7 +82,8 @@ for name, path, t_col, cat_col, sen_col, dom_col in SOURCES:
             if not title:
                 continue
             key = title.lower()
-            if key not in ALLOW_EXACT and not ALLOW_RE.search(title):
+            if (name != "manual" and key not in ALLOW_EXACT
+                    and not ALLOW_RE.search(title)):
                 dropped.setdefault(key, title)
                 continue
             entry = master.get(key)
@@ -75,7 +100,7 @@ for name, path, t_col, cat_col, sen_col, dom_col in SOURCES:
                 if col and not entry[field]:
                     entry[field] = norm(row.get(col) or "")
 
-out = REPO / "ai_job_titles_master.csv"
+out = REPO / MASTER_OUT
 with out.open("w", newline="", encoding="utf-8") as fh:
     w = csv.writer(fh)
     w.writerow(["Job Title", "Category", "Seniority Level", "Domain Focus",
@@ -85,7 +110,7 @@ with out.open("w", newline="", encoding="utf-8") as fh:
         w.writerow([e["Job Title"], e["Category"], e["Seniority Level"],
                     e["Domain Focus"], ";".join(srcs), len(srcs)])
 
-(REPO / "ai_job_titles_dropped.csv").write_text(
+(REPO / DROPPED_OUT).write_text(
     "Job Title\n" + "\n".join(sorted(dropped.values(), key=str.lower)) + "\n",
     encoding="utf-8")
 

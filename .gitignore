@@ -24,7 +24,14 @@ __pycache__/
 # Pipeline outputs
 output/*.pkl
 output/shards/
+output_v2/*.pkl
+output_v2/shards/
+
+# LibreOffice lock files
+.~lock.*#
 
 # Quarto intermediates
 report.typ
 report_files/
+report_v2.typ
+report_v2_files/

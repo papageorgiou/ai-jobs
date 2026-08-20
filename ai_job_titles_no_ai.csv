@@ -1,0 +1,123 @@
+Title,Category,Companies/Sources,Notes
+Research Scientist Interpretability,Research,"Anthropic, Google DeepMind",Core mechanistic interpretability research
+Research Engineer Interpretability,Research,Anthropic,
+Research Manager Interpretability,Research,Anthropic,Listed as Expression of Interest
+Research Scientist Alignment,Research,"Anthropic, OpenAI",Validates models are harmless and honest
+Research Engineer Alignment,Research,Anthropic,SF and London
+Researcher Alignment Oversight,Research,OpenAI,Scalable oversight and control techniques
+Research Engineer Superalignment,Research,OpenAI,Scalable oversight and automated interpretability
+Member of Technical Staff,Research,"OpenAI, Anthropic, Cohere, Mistral, xAI, Microsoft",Spans specializations e.g. Post-Training Modeling Search Agent Code
+Research Scientist Generative Models,Research,Meta,
+Research Scientist FAIR,Research,Meta,FAIR expands to Fundamental AI Research; title string itself omits AI
+Research Scientist World Models,Research,Google DeepMind,
+Research Scientist Reasoning,Research,Google DeepMind,
+Research Scientist Agent Post-Training,Research,Google DeepMind,
+Research Scientist Recommendation Systems,Research,Google DeepMind,
+Applied Scientist,Research,"Amazon, Mistral",
+Research Engineer,Research,"Anthropic, Cohere, Mistral","General title spanning many internal teams e.g. Agents, Computer Use, Discovery, Domain Scaling, Universes, Visual Knowledge Work, Knowledge Foundations"
+Research Engineer Pretraining,Research,Anthropic,Includes Pretraining Scaling
+Research Engineer Reinforcement Learning,Research,Anthropic,"Covers sub-teams e.g. Code RL, Chip Design RL, Cybersecurity RL, Performance RL, RL Scaling Science"
+Research Engineer Model Evaluations,Research,Anthropic,
+Research Resident,Research,OpenAI,Six month program roughly 210 to 220K per year
+Anthropic Fellow,Research,Anthropic,Fellowship across Alignment RL and ML Systems and Performance
+Research Scientist Speech and Audio,Research,Meta FAIR,
+Research Scientist Generative Vision,Research,Meta FAIR,
+LLM Engineer,Engineering,"Widespread, startups and fintechs",Often paid a premium vs AI Engineer for similar RAG work
+Forward Deployed Engineer,Engineering,"OpenAI, Anthropic, Palantir, Cohere, Mistral, Databricks, Ramp, Cursor",Postings rose 729 percent year over year per Indeed data
+Forward Deployed Machine Learning Engineer,Engineering,Mistral,
+Forward Deployed Software Engineer,Engineering,"Palantir and adopters",Variant of Forward Deployed Engineer
+Context Engineer,Engineering,Emerging,Owns RAG curation and agent context files
+Agent Engineer,Engineering,Widespread,Builds agentic systems
+RAG Engineer,Engineering,Widespread,Increasingly treated as a skill rather than a standalone title
+LLMOps Engineer,Engineering,Widespread,LLM analog of MLOps
+Inference Engineer,Engineering,"Frontier labs, NVIDIA, startups",Makes models fast affordable and reliable
+Performance Engineer Inference Systems,Engineering,Anthropic,GPU and inference systems performance
+Compiler Engineer Inference,Engineering,NVIDIA,Kernel generation and computational graph optimizations
+GPU Kernel Compiler Engineer,Engineering,NVIDIA,
+Inference Performance Engineer,Engineering,NVIDIA,TensorRT-LLM SGLang vLLM
+TPU Kernel Engineer,Engineering,Anthropic,
+Machine Learning Infrastructure Engineer,Engineering,Anthropic,Safeguards Research team
+Software Engineer Reinforcement Learning,Engineering,Anthropic,"Covers RL Data, Environments Infrastructure, and related RL infrastructure roles"
+Model Performance Software Engineer,Engineering,Anthropic,Claude Code team
+Engineering Manager Inference,Engineering,Anthropic,
+Engineering Manager Agent Runtime Platform,Engineering,Anthropic,
+Software Engineer Research Infrastructure,Engineering,Anthropic,Includes Research Tools
+Evals Infrastructure Tech Lead,Engineering,Anthropic,
+Full Stack Engineer Human Data Team,Engineering,xAI,
+Harness Engineer,Engineering,Emerging,Builds agent evaluation harnesses
+Solutions Architect,Product,"Anthropic Applied team, Cohere",
+Research Product Manager Model Behaviors,Product,Anthropic,Defines and shapes Claude's character
+Research Product Manager Labs,Product,Anthropic,
+Product Manager Research,Product,Anthropic,
+Research Engineer Model Experience,Product,OpenAI,Shapes default character and behavior of ChatGPT
+Prompt Engineer,Product,Widespread,Declining as a standalone title
+Conversation Designer,Product,Widespread,"Also called VUI Designer, Chatbot Designer, Dialogue Writer"
+Developer Advocate Generative Models,Product,"NVIDIA, AWS, Databricks",
+Developer Relations Manager Generative Models,Product,NVIDIA,
+Technical Enablement Lead,Product,Anthropic,Claude Platform team
+Technical Specialist,Product,Anthropic,Claude Code team
+Alignment Researcher,Safety,"Anthropic, OpenAI, Redwood",
+Alignment Auditing Researcher,Safety,AI Alignment Forum affiliated,Builds tools to increase auditing agent performance
+Scalable Oversight Researcher,Safety,"Scale AI SEAL, OpenAI, Anthropic",Roughly 176K to 300K at Scale
+Automated Alignment Researcher,Safety,Anthropic,
+Research Engineer Model Welfare,Safety,Anthropic,Evaluates potential welfare and moral status of AI systems
+Research Scientist Societal Impacts,Safety,Anthropic,Uses Clio to analyze usage
+Research Engineer Safeguards,Safety,Anthropic,
+Research Scientist Biological Safety,Safety,Anthropic,
+Research Engineer Frontier Safety Risk Assessment,Safety,Google DeepMind,Roughly 136K to 245K base
+Operational Ethics and Safety Manager,Safety,Google DeepMind,ReDI team
+Head of Preparedness,Safety,OpenAI,Capability evaluations threat models and mitigations
+Model Behavior Architect,Safety,Anthropic,Alignment RL and finetuning team
+Red Team Engineer Safeguards,Red Teaming and Evaluations,Anthropic,
+Lead Frontier Red Team,Red Teaming and Evaluations,Anthropic,Cyber specialization
+Research Scientist Frontier Red Team,Red Teaming and Evaluations,Anthropic,"Covers Emerging Risks, CBRN, Autonomy"
+Research Engineer Frontier Red Team,Red Teaming and Evaluations,Anthropic,RSP Evaluations
+Red Teaming Lead Responsibility,Red Teaming and Evaluations,Google DeepMind,"Covers CBRNe and Cyber"
+Security Lead Agentic Red Team,Red Teaming and Evaluations,Google DeepMind,Focused on closing the agentic launch gap
+Senior Security Engineer Agentic Red Team,Red Teaming and Evaluations,Google DeepMind,Multi-turn attacks on production models
+Model Evaluation Engineer,Red Teaming and Evaluations,Scale AI,Automated evaluation pipelines and LLM-judge pipelines
+Evals Engineer,Red Teaming and Evaluations,Widespread,Also called Evaluator; designs test harnesses
+Lead Cyber Security Evaluation Expert,Red Teaming and Evaluations,Scale AI,Cyber Test and Evaluation adversarial testing
+Technical Program Manager Adversarial Model Research,Red Teaming and Evaluations,OpenAI,
+SEAL Research Scientist,Red Teaming and Evaluations,Scale AI,Safety Evaluations and Alignment Lab
+Engineering Manager Safety and Evaluation,Red Teaming and Evaluations,Scale AI,GenAI focused
+Safeguards Enforcement Analyst,Trust and Safety,Anthropic,"Sub-specialties include Bio Harms, Cyber Harm, Child Safety, Fraud and Scams, Violence and Extremism"
+Technical CBRN-E Threat Investigator,Trust and Safety,Anthropic,
+Technical Cyber Threat Investigator,Trust and Safety,Anthropic,
+Threat Intelligence Engineer,Trust and Safety,Anthropic,
+Threat Intel Manager,Trust and Safety,Anthropic,Model Exploitation Fraud and Influence Operations
+Technical Threat Investigator,Trust and Safety,OpenAI,Threat Intel Engineering team
+Technical Influence Operations Threat Investigator,Trust and Safety,Anthropic,
+Cybersecurity Landscape Analyst,Trust and Safety,OpenAI,Stress tests assumptions on misuse of frontier capabilities
+Abuse Investigator,Trust and Safety,OpenAI,
+Offensive Hardware Security Engineer,Trust and Safety,Anthropic,Platform Security team
+RLHF Rater,Data and Human Feedback,"DataAnnotation, Prolific, Handshake",Also called AI Rater
+RLHF Rater Lead,Data and Human Feedback,Annotation vendors,
+Data Annotation Specialist,Data and Human Feedback,"Scale AI, vendors",
+Data Labeling Specialist,Data and Human Feedback,"AI labs, AV companies, medical AI",
+Model Behavior Tutor,Data and Human Feedback,xAI,Wit and Conversation team; roughly 50 to 70 dollars per hour
+Human Data Manager,Data and Human Feedback,xAI,Mentors a team of tutors
+Data Operations Manager Human Data,Data and Human Feedback,Anthropic,
+Software Engineer Human Data Interface,Data and Human Feedback,Anthropic,
+Product Management Human Data Platform,Data and Human Feedback,Anthropic,
+Domain Expert,Data and Human Feedback,Prolific and vendors,Paid model training participant
+Image Specialist,Data and Human Feedback,xAI,Trains visual generation
+Video Specialist,Data and Human Feedback,xAI,Trains video capability
+STEM Specialist,Data and Human Feedback,xAI,Domain tutor role
+Annotation Project Manager,Data and Human Feedback,Annotation vendors,Also called Data Operations Lead
+Data Curator,Data and Human Feedback,"AI labs, annotation pipelines",
+Reward Model Engineer,Data and Human Feedback,Implied by RLHF pipelines,Trains reward models
+Vision-Language-Action Researcher,Robotics and Multimodal,"Google DeepMind, NVIDIA, Physical Intelligence",Also called VLA Engineer
+Embodied Intelligence Researcher,Robotics and Multimodal,Robotics labs,Perceives reasons and acts through physical interaction
+Foundation Model Researcher Robotics,Robotics and Multimodal,"Midea, NVIDIA, others",
+Perception Engineer,Robotics and Multimodal,AV and robotics companies,
+Multimodal Research Scientist,Robotics and Multimodal,Meta FAIR,
+Computer Vision Research Scientist,Robotics and Multimodal,Widespread frontier and AV,
+Natural Language Processing Researcher,Robotics and Multimodal,Widespread,Also called NLP Scientist
+Responsible Scaling Officer,Policy and Governance,Anthropic,Governs frontier risk under the Responsible Scaling Policy
+Technical Policy Researcher Model Behaviour,Policy and Governance,TikTok,Model bias political risk and model behaviour
+Model Policy,Policy and Governance,OpenAI,"Covers Frontier Cyber Risk, Chemical and Biological Risk"
+Research Economist,Policy and Governance,Anthropic,Also called Transformative AI Research Economist
+Responsible Innovation Lead,Policy and Governance,Tech companies,Ethics and governance
+Trust and Safety Analyst,Policy and Governance,Widespread,Model risk review
+Governance Analyst,Policy and Governance,"Enterprises, labs",Also called Model Risk Analyst

@@ -1,0 +1,2 @@
+kw_list,start,finish,location_ids,language_id,iteration,length_of_results,exception,stack_trace
+['weather'],0,1,2840,1000,1,1,success,success
