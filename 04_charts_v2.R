@@ -2,7 +2,7 @@
 #
 # v2 differs from v1 in exactly one input: the title "Forward Deployed Engineer"
 # is added to the master list, and the pull was rerun (window moved one month,
-# to Sep 2022 - Aug 2026). This is a separate file rather than a parameterised
+# to Aug 2022 - Jul 2026). This is a separate file rather than a parameterised
 # 04_charts.R because several v1 chart *conclusions* no longer hold - notably
 # "Engineering is not where AI hiring curiosity is growing fastest" (chart 7)
 # and the prompt -> context succession (chart 12). v1 stays reproducible as-is.
@@ -68,9 +68,7 @@ theme_post <- function(base_size = 13) {
     )
 }
 
-CAPTION <- paste("Source: Google Ads Keyword Planner, US, Sep 2022 - Aug 2026.",
-                 "Retrieved 2026-08-20 (v2). Volumes are rounded buckets, not exact counts.",
-                 "\nCode: github.com/papageorgiou/ai-jobs")
+CAPTION <- NULL   # built from the data once it is loaded; see below
 
 save_chart <- function(plot, name, w = 10, h = 8) {
   # Wrap centrally so every chart gets it, rather than hand-wrapping each labs().
@@ -104,6 +102,17 @@ recent <- rolling |>
 
 clusters <- clusters |> left_join(recent, by = "keyword")
 
+# The window is stated from the data, not typed. v2 was originally captioned
+# "Sep 2022 - Aug 2026" because 02_stats.py added a spurious +1 to the API's own
+# month labels; the pull ran 2026-08-20 and can only reach the last complete
+# month, July 2026. A wrong-but-plausible date range is invisible downstream, so
+# derive it rather than restate it.
+win <- range(as.Date(rolling$month))
+CAPTION <- paste0(
+  "Source: Google Data, US, ", format(win[1], "%b %Y"), " - ", format(win[2], "%b %Y"),
+  ". Retrieved 2026-08-20 (v2). Volumes are rounded buckets, not exact counts.",
+  "\nAnalysis & code: github.com/papageorgiou/ai-jobs   |   @alex_papageo")
+
 career <- clusters |> filter(intent == "career")
 tools  <- clusters |> filter(intent == "tool-risk")
 FDE    <- "forward deployed engineer"
@@ -130,36 +139,92 @@ p1 <- ggplot(split_ts, aes(month, searches, colour = intent)) +
 save_chart(p1, "01_intent_split.png", 11, 7)
 
 # =============================================================================
-# 2. Spaghetti - career titles, top movers highlighted
+# 2. Spaghetti - career titles, the five that carry the story highlighted
 # =============================================================================
-top_movers <- career |> slice_max(momentum, n = 8) |> pull(keyword)
+# Hand-picked rather than taken from slice_max(momentum, n = 8): these five are
+# the succession narrative (prompt -> context -> forward deployed), the steady
+# incumbent (ai engineer) and the advisory outlier (ai strategy consultant).
+# Momentum's top 8 pulls in tiny terms that are noise at this scale.
+highlights <- c(FDE, "prompt engineer", "context engineer",
+                "ai engineer", "ai strategy consultant")
+stopifnot(all(highlights %in% career$keyword))
+
+hl_cols <- c(pal[["red"]], pal[["orange"]], pal[["blue"]], pal[["purple"]])
+names(hl_cols) <- setdiff(highlights, FDE)
+hl_cols[[FDE]] <- pal[["green"]]
+
+# Y floor at 10 rather than the series minimum: below that a log axis spends a
+# third of its height on rounding noise (94 of 9,597 career points, none of them
+# a term anyone is reading the chart for). Censor rather than clamp - pmax()ing
+# to the floor would draw a solid wall of fake flat lines along the axis.
+Y_FLOOR <- 10
 
 spag <- rolling |>
   filter(intent == "career") |>
-  mutate(highlight = keyword %in% top_movers)
+  mutate(highlight = keyword %in% highlights,
+         is_fde    = keyword == FDE)
 
 labels <- spag |> filter(highlight) |> group_by(keyword) |>
   slice_max(month, n = 1) |> ungroup()
 
+fde_line <- filter(spag, is_fde)
+x_rng    <- range(as.Date(spag$month))
+
 p2 <- ggplot() +
   geom_line(data = filter(spag, !highlight),
             aes(month, roll_avg, group = keyword),
-            colour = "grey72", linewidth = 0.3, alpha = 0.55) +
-  geom_line(data = filter(spag, highlight),
-            aes(month, roll_avg, colour = keyword), linewidth = 1.2) +
-  geom_text_repel(data = labels, aes(month, roll_avg, label = keyword, colour = keyword),
-                  hjust = 0, direction = "y", nudge_x = 45, size = 3.4,
-                  segment.colour = "grey60", seed = 1) +
-  scale_colour_manual(values = unname(pal)) +
+            colour = "grey78", linewidth = 0.28, alpha = 0.45) +
+  geom_line(data = filter(spag, highlight, !is_fde),
+            aes(month, roll_avg, colour = keyword), linewidth = 1.1) +
+  # FDE gets a pale casing under a heavy stroke so it reads as the subject even
+  # where it crosses the other highlighted lines.
+  geom_line(data = fde_line, aes(month, roll_avg),
+            colour = bg_plot, linewidth = 4.4, lineend = "round") +
+  geom_line(data = fde_line, aes(month, roll_avg),
+            colour = pal[["green"]], linewidth = 2.3, lineend = "round") +
+  geom_point(data = filter(labels, is_fde), aes(month, roll_avg),
+             colour = pal[["green"]], size = 3.6) +
+  # ggrepel has no markdown, and the FDE label is the one that needs bolding -
+  # but it is also the only one with clear air around it, so it can be placed
+  # directly while the other four are repelled apart from each other.
+  ggtext::geom_richtext(
+    data = filter(labels, is_fde),
+    aes(month, roll_avg,
+        label = paste0("**", keyword, "**<br>", label_comma()(roll_avg), "/mo")),
+    hjust = 0, nudge_x = 40, size = 3.6, lineheight = 1.15,
+    colour = pal[["green"]], fill = NA, label.colour = NA,
+    label.padding = unit(1.5, "pt")) +
+  geom_text_repel(
+    data = filter(labels, !is_fde),
+    aes(month, roll_avg, label = keyword, colour = keyword),
+    hjust = 0, direction = "y", nudge_x = 40, size = 3.5,
+    min.segment.length = 0.2, segment.colour = "grey60", seed = 1) +
+  scale_colour_manual(values = hl_cols) +
   # Log scale: the biggest career terms sit in the tens of thousands while the
   # emerging ones sit in the hundreds, so a linear axis flattens everything.
-  scale_y_log10(labels = label_comma()) +
-  scale_x_date(expand = expansion(mult = c(0.02, 0.22))) +
-  labs(title = "A handful of AI job titles account for nearly all the growth",
-       subtitle = paste0("Each grey line is one of ", nrow(career),
-                         " AI career search terms; the eight with the strongest ",
-                         "momentum are highlighted. 3-month rolling average, log scale."),
-       x = NULL, y = "Searches per month", caption = CAPTION) +
+  scale_y_log10(labels = label_comma(), limits = c(Y_FLOOR, NA),
+                breaks = c(10, 100, 1000, 10000, 50000)) +
+  # Breaks come from the data range, and the right-hand pad is added through
+  # limits rather than expansion() - expansion() also stretches the break
+  # sequence, which ran the axis a year past the last month of data.
+  scale_x_date(breaks = unique(c(seq(x_rng[1], x_rng[2], by = "6 months"), x_rng[2])),
+               date_labels = "%b %Y",
+               # Pad in days, sized to the longest end-label ("forward deployed
+               # engineer"), which otherwise clips against the panel edge.
+               limits = c(x_rng[1], x_rng[2] + 430),
+               expand = expansion(mult = c(0.02, 0))) +
+  labs(
+    title = "\"Forward deployed engineer\" is now America's most-searched AI career title",
+    subtitle = glue(
+      "Each grey line is one of {nrow(career)} AI career search terms. ",
+      "<span style='color:{pal[['green']]}'>**Forward deployed engineer**</span> was flat at ",
+      "~400/month for the first two and a half years, then overtook the entire field. ",
+      "<span style='color:{pal[['red']]}'>**Prompt engineer**</span> and ",
+      "<span style='color:{pal[['orange']]}'>**context engineer**</span> have both peaked and ",
+      "turned down; <span style='color:{pal[['blue']]}'>**AI engineer**</span> and ",
+      "<span style='color:{pal[['purple']]}'>**AI strategy consultant**</span> keep climbing. ",
+      "3-month rolling average, log scale."),
+    x = NULL, y = "Searches per month", caption = CAPTION) +
   theme_post()
 save_chart(p2, "02_spaghetti_career.png", 12, 8)
 
@@ -415,13 +480,13 @@ save_chart(p12, "12_prompt_to_context.png", 11, 7.5)
 # ("Incompatible methods Ops.POSIXt / Ops.Date") and returns every row, which
 # put the takeoff marker on the first month of the window. Coerce once here.
 fde_ts <- rolling |> filter(keyword == FDE) |> mutate(month = as.Date(month))
-takeoff <- fde_ts |> filter(month == as.Date("2025-02-01"))
+takeoff <- fde_ts |> filter(month == as.Date("2025-01-01"))
 latest  <- fde_ts |> slice_max(month, n = 1)
 stopifnot(nrow(takeoff) == 1, nrow(latest) == 1,
-          format(takeoff$month, "%Y-%m") == "2025-02")
+          format(takeoff$month, "%Y-%m") == "2025-01")
 
 p13 <- ggplot(fde_ts, aes(month, searches)) +
-  annotate("rect", xmin = as.Date("2022-09-01"), xmax = as.Date("2025-01-31"),
+  annotate("rect", xmin = as.Date("2022-08-01"), xmax = as.Date("2024-12-31"),
            ymin = -Inf, ymax = Inf, fill = "grey70", alpha = 0.16) +
   annotate("text", x = as.Date("2023-11-01"), y = 30000,
            label = "Palantir-era baseline:\nflat at ~400/month for 29 months",
@@ -429,19 +494,22 @@ p13 <- ggplot(fde_ts, aes(month, searches)) +
   geom_line(colour = pal[["green"]], linewidth = 1.5) +
   geom_point(data = bind_rows(takeoff, latest), size = 3, colour = pal[["green"]]) +
   geom_text_repel(data = takeoff,
-                  aes(label = glue("Feb 2025\n{label_comma()(searches)}/mo")),
+                  aes(label = glue("{format(month, '%b %Y')}\n{label_comma()(searches)}/mo")),
                   nudge_y = 6000, nudge_x = -200, size = 3.3, lineheight = 1,
                   colour = text_axes, segment.colour = "grey55", seed = 11) +
   geom_text_repel(data = latest,
-                  aes(label = glue("Aug 2026\n{label_comma()(searches)}/mo")),
+                  aes(label = glue("{format(month, '%b %Y')}\n{label_comma()(searches)}/mo")),
                   nudge_y = -7000, nudge_x = -260, size = 3.3, lineheight = 1,
                   colour = text_axes, segment.colour = "grey55", seed = 12) +
   scale_y_continuous(labels = label_comma()) +
   labs(
-    title = "\"Forward deployed engineer\" is now America's most-searched AI career title",
+    # Chart 2 now carries the "most-searched title" headline, so this one names
+    # what only it shows: the shape of the break, not the ranking.
+    title = "A title nobody searched for went 30x in eighteen months",
     subtitle = glue(
-      "Monthly US searches. A Palantir in-joke for years, flat at a few hundred a month. ",
-      "From <span style='color:{pal[['green']]}'>**February 2025**</span> it compounds roughly ",
+      "Monthly US searches for **forward deployed engineer**. A Palantir in-joke for years, ",
+      "flat at a few hundred a month. ",
+      "From <span style='color:{pal[['green']]}'>**January 2025**</span> it compounds roughly ",
       "**30x in eighteen months** - a step change, not a trend. Linear scale, because for once ",
       "the shape survives one."),
     x = NULL, y = "Searches per month", caption = CAPTION) +
@@ -451,6 +519,9 @@ save_chart(p13, "13_fde_stepchange.png", 12, 7)
 # =============================================================================
 # 14. NEW - recent level vs the 12-month average that hides it
 # =============================================================================
+last3_lab <- {m <- sort(unique(as.Date(rolling$month))); m <- tail(m, 3)
+  paste0(format(m[1], "%b"), "-", format(m[3], "%b %Y"))}
+
 lead_order <- career |> slice_max(last3, n = 12) |> arrange(last3) |> pull(keyword)
 
 lead_d <- career |> filter(keyword %in% lead_order) |>
@@ -467,7 +538,7 @@ p14 <- ggplot(lead_d, aes(searches, keyword, fill = measure)) +
   labs(
     title = "Rank AI career titles by what they are doing now",
     subtitle = glue(
-      "<span style='color:{pal[['green']]}'>**Last three months (Jun-Aug 2026)**</span> against the ",
+      "<span style='color:{pal[['green']]}'>**Last three months ({last3_lab})**</span> against the ",
       "<span style='color:grey45'>**trailing 12-month average**</span> Keyword Planner reports. ",
       "A title that stepped up mid-window looks half its real size in the average - which is ",
       "exactly what happened to forward deployed engineer."),

@@ -8,11 +8,12 @@ Output feeds LinkedIn posts. Charts for publication live in the separate `posts`
 
 ## Two versions live side by side
 
-**v1** is the original study (1,052 titles, Aug 2022 - Jul 2026, pulled 2026-07-29):
-`output/`, `04_charts.R`, `report.qmd`, `INSIGHTS.md`.
+**v1** is the original study (1,052 titles, pulled 2026-07-29): `output/`, `04_charts.R`,
+`report.qmd`, `INSIGHTS.md`. Its real window is **Jul 2022 - Jun 2026**; its charts and report
+say Aug 2022 - Jul 2026 because of the month-label bug below, and were not re-rendered.
 
-**v2** adds one title, `Forward Deployed Engineer`, and re-pulls (1,053 titles, Sep 2022 -
-Aug 2026, pulled 2026-08-20): `output_v2/`, `04_charts_v2.R`, `report_v2.qmd`,
+**v2** adds one title, `Forward Deployed Engineer`, and re-pulls (1,053 titles, Aug 2022 -
+Jul 2026, pulled 2026-08-20): `output_v2/`, `04_charts_v2.R`, `report_v2.qmd`,
 `INSIGHTS_v2.md`.
 
 v1 is frozen and must stay reproducible - do not edit `04_charts.R`, `report.qmd`,
@@ -110,9 +111,25 @@ high-volume title above every emerging one:
 
 Growth rate and net volume rank almost disjoint sets of titles. Report both or say which you used.
 
-**The `past_months` +1 correction.** `kwideas_funcs` encodes months as `f"{month-1}-{year}"`, so
-`"5-2022"` means June 2022. `02_stats.py` applies the correction in `resolve_start()`. A naive
-parse silently lands the whole series a month early.
+**The `past_months` labels need no correction — and an earlier version of this file said they
+did.** `kwideas_funcs` encodes months as `f"{vol.month - 1}-{year}"`, and the Google Ads
+`MonthOfYearEnum` starts at `JANUARY = 2`, so `month - 1` is *already* the true calendar month.
+`"8-2022"` means August 2022. Do not add 1.
+
+`02_stats.py` used to add 1, on the since-corrected reading that `"8-2022"` meant September. That
+put every v2 month one late: the window was labelled Sep 2022 - Aug 2026 when the pull ran
+2026-08-20 and can only reach the last complete month, July 2026. Fixed 2026-08-27 in
+`resolve_months()`, which now reads the labels, asserts all rows agree and that they are
+chronological, and persists them to `output*/month_labels.json`.
+
+**v1's `output/` is still shifted** — it is frozen, so it was not re-run. Its real window is
+Jul 2022 - Jun 2026, not the Aug 2022 - Jul 2026 its charts and report state. Re-run
+`02_stats.py`/`03_cluster.py` against `output/` before reusing any v1 date claim.
+
+The lesson generalises: a window shifted by a month is invisible downstream. Every internal check
+passes, the shape stays smooth, nothing looks broken. Derive the range from the data and print it
+— never restate it in a caption or a `START` constant. `04_charts_v2.R` now builds `CAPTION` from
+`range(rolling$month)` for exactly this reason.
 
 **Log scales are usually required.** `prompt engineer` peaks at 65,000/month while emerging
 titles sit in the hundreds. On a linear axis every line of interest renders as flat.

@@ -1,6 +1,6 @@
 """Rolling average, trend model and growth metrics per keyword."""
 
-import re
+import json
 import sys
 
 import numpy as np
@@ -13,28 +13,48 @@ sys.path.append(config.ADS_API_DIR)
 from pyevangelion_powerfuncs_ai import get_final_res_df  # noqa: E402
 
 
-def resolve_start():
-    """First month of the 48-month window, as a Timestamp.
+def resolve_months():
+    """The 48 month labels of the window, as a DatetimeIndex.
 
-    kwideas_funcs encodes past_months as f"{month-1}-{year}", so "5-2022" means
-    June 2022, not May. A naive parse silently lands a month early, so the +1
-    correction here is load-bearing.
+    The API returns a past_months label vector alongside searches_past_months,
+    and it is the only authoritative statement of which months the numbers
+    describe. Read it; never hardcode a start date.
+
+    kwideas_funcs encodes each label as f"{vol.month - 1}-{year}", and the Google
+    Ads MonthOfYearEnum starts at JANUARY = 2, so month - 1 is already the true
+    calendar month. "8-2022" means August 2022. No correction is needed.
+
+    An earlier version of this function added 1, on the since-corrected reading
+    that "8-2022" meant September. That put the whole series one month late: v2
+    was labelled Sep 2022 - Aug 2026 when the pull (2026-08-20) can only reach
+    the last complete month, July 2026. A shifted window still looks entirely
+    plausible - every downstream check passes - so it is caught here or not at
+    all.
     """
     df = get_final_res_df(pd.read_pickle(config.out("full_results.pkl")))
     df.columns = [c.lower().replace(" ", "_") for c in df.columns]
-    full = df[df["past_months"].map(lambda v: len(v) if hasattr(v, "__len__") else 0)
-              == config.N_MONTHS]
-    if full.empty:
-        raise SystemExit("no row with a full past_months series to derive the start date")
-    first = list(full.iloc[0]["past_months"])[0]
-    month, year = re.match(r"(\d+)-(\d+)", str(first)).groups()
-    return pd.Timestamp(int(year), int(month) + 1, 1)   # +1: see docstring
+    lab = df["past_months"].apply(
+        lambda v: tuple(v) if isinstance(v, (list, tuple)) else ())
+    lab = lab[lab.map(len) == config.N_MONTHS]
+    if lab.empty:
+        raise SystemExit("no full-length past_months vector returned")
+    if lab.nunique() != 1:
+        raise SystemExit(f"rows disagree on month labels: {lab.nunique()} distinct")
+
+    months = [f"{int(y):04d}-{int(m):02d}"
+              for m, y in (str(x).split("-") for x in lab.iloc[0])]
+    if sorted(months) != months:
+        raise SystemExit(f"labels not chronological: {months[:3]} ... {months[-3:]}")
+
+    idx = pd.to_datetime([f"{m}-01" for m in months])
+    json.dump(months, open(config.out("month_labels.json"), "w"))
+    print(f"month labels from API: {months[0]} -> {months[-1]} ({len(months)} months)")
+    return idx
 
 
 def main():
     df = pd.read_parquet(config.out("df_clean.parquet"))
-    start = resolve_start()
-    months = pd.date_range(start, periods=config.N_MONTHS, freq="MS")
+    months = resolve_months()
     print(f"window: {months[0]:%Y-%m} to {months[-1]:%Y-%m} ({len(months)} months)")
     assert len(months) == config.N_MONTHS
 
