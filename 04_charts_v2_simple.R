@@ -14,6 +14,11 @@
 # them anyway.
 #
 # Writes to output_v2/charts_simple/ so 04_charts_v2.R's output is untouched.
+#
+# Window is Aug 2022 - Jul 2026. It is derived from the data, never typed -
+# 02_stats.py used to add a spurious +1 to the API's own month labels, which
+# captioned every v2 chart a month late, and a wrong-but-plausible date range is
+# invisible downstream.
 
 library(arrow)
 library(dplyr)
@@ -75,9 +80,7 @@ theme_legend <- function() {
         legend.text = element_text(size = rel(0.9)))
 }
 
-CAPTION <- paste("Source: Google Ads Keyword Planner, US, Sep 2022 - Aug 2026.",
-                 "Retrieved 2026-08-20 (v2). Volumes are rounded buckets, not exact counts.",
-                 "\nCode: github.com/papageorgiou/ai-jobs")
+CAPTION <- NULL   # built from the data once it is loaded; see below
 
 save_chart <- function(plot, name, w = 10, h = 8) {
   if (!is.null(plot$labels$title))
@@ -103,6 +106,15 @@ recent <- rolling |>
   mutate(off_peak = last3 / peak - 1)
 
 clusters <- clusters |> left_join(recent, by = "keyword")
+
+# Stated from the data, matching 04_charts_v2.R. A hand-typed range cannot
+# detect that the window moved, which is exactly how v2 shipped captioned
+# "Sep 2022 - Aug 2026" for a pull that stops at July 2026.
+win <- range(as.Date(rolling$month))
+CAPTION <- paste0(
+  "Source: Google Data, US, ", format(win[1], "%b %Y"), " - ", format(win[2], "%b %Y"),
+  ". Retrieved 2026-08-20 (v2). Volumes are rounded buckets, not exact counts.",
+  "\nAnalysis & code: github.com/papageorgiou/ai-jobs   |   @alex_papageo")
 
 career <- clusters |> filter(intent == "career")
 tools  <- clusters |> filter(intent == "tool-risk")
@@ -373,13 +385,13 @@ save_chart(p12, "12_prompt_to_context.png", 11, 7.5)
 # 13. The FDE step change on its own
 # =============================================================================
 fde_ts <- rolling |> filter(keyword == FDE) |> mutate(month = as.Date(month))
-takeoff <- fde_ts |> filter(month == as.Date("2025-02-01"))
+takeoff <- fde_ts |> filter(month == as.Date("2025-01-01"))
 latest  <- fde_ts |> slice_max(month, n = 1)
 stopifnot(nrow(takeoff) == 1, nrow(latest) == 1,
-          format(takeoff$month, "%Y-%m") == "2025-02")
+          format(takeoff$month, "%Y-%m") == "2025-01")
 
 p13 <- ggplot(fde_ts, aes(month, searches)) +
-  annotate("rect", xmin = as.Date("2022-09-01"), xmax = as.Date("2025-01-31"),
+  annotate("rect", xmin = as.Date("2022-08-01"), xmax = as.Date("2024-12-31"),
            ymin = -Inf, ymax = Inf, fill = "grey70", alpha = 0.16) +
   annotate("text", x = as.Date("2023-11-01"), y = 30000,
            label = "Palantir-era baseline:\nflat at ~400/month for 29 months",
@@ -387,11 +399,11 @@ p13 <- ggplot(fde_ts, aes(month, searches)) +
   geom_line(colour = pal[["green"]], linewidth = 1.5) +
   geom_point(data = bind_rows(takeoff, latest), size = 3, colour = pal[["green"]]) +
   geom_text_repel(data = takeoff,
-                  aes(label = glue("Feb 2025\n{label_comma()(searches)}/mo")),
+                  aes(label = glue("{format(month, '%b %Y')}\n{label_comma()(searches)}/mo")),
                   nudge_y = 6000, nudge_x = -200, size = 3.3, lineheight = 1,
                   colour = text_axes, segment.colour = "grey55", seed = 11) +
   geom_text_repel(data = latest,
-                  aes(label = glue("Aug 2026\n{label_comma()(searches)}/mo")),
+                  aes(label = glue("{format(month, '%b %Y')}\n{label_comma()(searches)}/mo")),
                   nudge_y = -7000, nudge_x = -260, size = 3.3, lineheight = 1,
                   colour = text_axes, segment.colour = "grey55", seed = 12) +
   scale_y_continuous(labels = label_comma()) +
@@ -403,6 +415,9 @@ save_chart(p13, "13_fde_stepchange.png", 12, 7)
 # =============================================================================
 # 14. Recent level vs the 12-month average that hides it
 # =============================================================================
+last3_lab <- {m <- sort(unique(as.Date(rolling$month))); m <- tail(m, 3)
+  paste0(format(m[1], "%b"), "-", format(m[3], "%b %Y"))}
+
 lead_order <- career |> slice_max(last3, n = 12) |> arrange(last3) |> pull(keyword)
 
 lead_d <- career |> filter(keyword %in% lead_order) |>
@@ -416,7 +431,7 @@ p14 <- ggplot(lead_d, aes(searches, keyword, fill = measure)) +
   scale_fill_manual(values = c(`12-month average` = "grey65",
                                `Last 3 months` = pal[["green"]]),
                     labels = c(`12-month average` = "Trailing 12-month average (as reported)",
-                               `Last 3 months` = "Last 3 months (Jun-Aug 2026)")) +
+                               `Last 3 months` = paste0("Last 3 months (", last3_lab, ")"))) +
   scale_x_continuous(labels = label_comma(), expand = expansion(mult = c(0, 0.12))) +
   labs(title = "The reported average hides a title that stepped up",
        x = "Searches per month", y = NULL, caption = CAPTION) +
