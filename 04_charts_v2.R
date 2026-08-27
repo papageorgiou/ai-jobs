@@ -229,6 +229,104 @@ p2 <- ggplot() +
 save_chart(p2, "02_spaghetti_career.png", 12, 8)
 
 # =============================================================================
+# 2b. Same five lines, no spaghetti - plus the Karpathy annotation
+# =============================================================================
+# A stripped version of chart 2 for the post itself. The 255 grey lines are the
+# evidence that the five are not cherry-picked, which matters in a report and
+# costs legibility in a feed, so the variant drops them. Everything else - the
+# palette, the FDE casing, the log axis, the end labels - is identical, so the
+# two charts read as the same chart twice rather than as two charts.
+#
+# The addition is an explanation for the one move on this chart that a reader
+# cannot account for from the chart itself: context engineer sitting at ~90
+# searches/month for thirty-four months and then multiplying 160x in two. That
+# was Karpathy's 25 Jun 2025 post ("+1 for 'context engineering' over 'prompt
+# engineering'", x.com/karpathy/status/1937902205765607626). A single tweet
+# moving a national search series is the point worth making, so it is drawn as
+# an annotation rather than left to the caption.
+KARPATHY_IMG   <- "karpathy/karpathy_circle.png"
+KARPATHY_MONTH <- as.Date("2025-06-01")   # the tweet month, first month of lift
+
+# Anchor the arrow on the line itself rather than at a typed y: the series is
+# plotted as a 3-month rolling average, so the June point is ~600, not the
+# 1,600 the raw month shows.
+ce_anchor <- spag |> filter(keyword == "context engineer",
+                            as.Date(month) == KARPATHY_MONTH)
+
+# Y floor lifted from 10 to 20: without the grey mass there is nothing below
+# `ai strategy consultant`'s 27, and the empty decade was only ever there to
+# hold the spaghetti.
+Y_FLOOR_5 <- 20
+
+spag5 <- filter(spag, highlight)
+
+p2b <- ggplot() +
+  geom_line(data = filter(spag5, !is_fde),
+            aes(month, roll_avg, colour = keyword), linewidth = 1.2) +
+  geom_line(data = fde_line, aes(month, roll_avg),
+            colour = bg_plot, linewidth = 4.4, lineend = "round") +
+  geom_line(data = fde_line, aes(month, roll_avg),
+            colour = pal[["green"]], linewidth = 2.3, lineend = "round") +
+  geom_point(data = filter(labels, is_fde), aes(month, roll_avg),
+             colour = pal[["green"]], size = 3.6) +
+
+  # --- the annotation -------------------------------------------------------
+  # Drawn before the labels so nothing of the arrow crosses a line label. The
+  # curve arcs left-and-up out of the text block to the elbow, which keeps it
+  # clear of the context engineer line's near-vertical segment.
+  geom_point(data = ce_anchor, aes(month, roll_avg),
+             colour = pal[["orange"]], size = 3.2) +
+  geom_curve(aes(x = as.Date("2025-09-20"), y = 175,
+                 xend = KARPATHY_MONTH + 20, yend = ce_anchor$roll_avg * 0.84),
+             curvature = 0.42, angle = 105, ncp = 14,
+             arrow = arrow(length = unit(0.022, "npc"), type = "closed"),
+             colour = pal[["orange"]], linewidth = 0.6) +
+  ggimage::geom_image(
+    data = data.frame(x = as.Date("2025-12-10"), y = 108),
+    aes(x, y), image = KARPATHY_IMG, size = 0.10, asp = 12 / 8) +
+  ggtext::geom_richtext(
+    data = data.frame(x = as.Date("2025-12-10"), y = 30),
+    aes(x, y, label = paste0(
+      "**Karpathy tweets<br>\"context engineering\"**<br>",
+      "<span style='font-size:8pt'>25 Jun 2025</span>")),
+    size = 3.5, lineheight = 1.25, colour = pal[["orange"]],
+    fill = NA, label.colour = NA, label.padding = unit(2, "pt")) +
+
+  ggtext::geom_richtext(
+    data = filter(labels, is_fde),
+    aes(month, roll_avg,
+        label = paste0("**", keyword, "**<br>", label_comma()(roll_avg), "/mo")),
+    hjust = 0, nudge_x = 40, size = 3.6, lineheight = 1.15,
+    colour = pal[["green"]], fill = NA, label.colour = NA,
+    label.padding = unit(1.5, "pt")) +
+  geom_text_repel(
+    data = filter(labels, !is_fde),
+    aes(month, roll_avg, label = keyword, colour = keyword),
+    hjust = 0, direction = "y", nudge_x = 40, size = 3.5,
+    min.segment.length = 0.2, segment.colour = "grey60", seed = 1) +
+  scale_colour_manual(values = hl_cols) +
+  scale_y_log10(labels = label_comma(), limits = c(Y_FLOOR_5, NA),
+                breaks = c(20, 100, 1000, 10000, 50000)) +
+  scale_x_date(breaks = unique(c(seq(x_rng[1], x_rng[2], by = "6 months"), x_rng[2])),
+               date_labels = "%b %Y",
+               limits = c(x_rng[1], x_rng[2] + 430),
+               expand = expansion(mult = c(0.02, 0))) +
+  labs(
+    title = "\"Forward deployed engineer\" is now America's most-searched AI career title",
+    subtitle = glue(
+      "Five AI career search terms, US. ",
+      "<span style='color:{pal[['green']]}'>**Forward deployed engineer**</span> was flat at ",
+      "~400/month for the first two and a half years, then overtook the entire field. ",
+      "<span style='color:{pal[['red']]}'>**Prompt engineer**</span> and ",
+      "<span style='color:{pal[['orange']]}'>**context engineer**</span> have both peaked and ",
+      "turned down; <span style='color:{pal[['blue']]}'>**AI engineer**</span> and ",
+      "<span style='color:{pal[['purple']]}'>**AI strategy consultant**</span> keep climbing. ",
+      "3-month rolling average, log scale."),
+    x = NULL, y = "Searches per month", caption = CAPTION) +
+  theme_post()
+save_chart(p2b, "02b_spaghetti_five_karpathy.png", 12, 8)
+
+# =============================================================================
 # 3. Growth vs volume quadrant - the angle-picking chart
 # =============================================================================
 quad <- career |>
