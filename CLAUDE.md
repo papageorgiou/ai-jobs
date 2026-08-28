@@ -52,6 +52,7 @@ uv run 01_clean.py && uv run 02_stats.py && uv run 03_cluster.py
 unset MASTER_CSV OUTPUT_DIR
 
 Rscript 04_charts_v2.R        # -> output_v2/charts/*.png (reads output_v2/ directly)
+Rscript 04_charts_v2_karpathy.R  # -> output_v2/charts_karpathy/*.png (four layouts)
 quarto render report_v2.qmd   # -> report_v2.pdf
 ```
 
