@@ -113,6 +113,13 @@ CAPTION <- paste0(
   ". Retrieved 2026-08-20 (v2). Volumes are rounded buckets, not exact counts.",
   "\nAnalysis & code: github.com/papageorgiou/ai-jobs   |   @alex_papageo")
 
+# The two spaghetti charts are the ones that go out as standalone images, where
+# the retrieval date and the rounding caveat are noise the feed reader will not
+# act on. They stay on every other chart and in the report.
+CAPTION_SHORT <- paste0(
+  "Source: Google Data, US, ", format(win[1], "%b %Y"), " - ", format(win[2], "%b %Y"), ".",
+  "\nAnalysis & code: github.com/papageorgiou/ai-jobs   |   @alex_papageo")
+
 career <- clusters |> filter(intent == "career")
 tools  <- clusters |> filter(intent == "tool-risk")
 FDE    <- "forward deployed engineer"
@@ -139,19 +146,43 @@ p1 <- ggplot(split_ts, aes(month, searches, colour = intent)) +
 save_chart(p1, "01_intent_split.png", 11, 7)
 
 # =============================================================================
-# 2. Spaghetti - career titles, the five that carry the story highlighted
+# 2. Spaghetti - career titles, the four that carry the story highlighted
 # =============================================================================
-# Hand-picked rather than taken from slice_max(momentum, n = 8): these five are
-# the succession narrative (prompt -> context -> forward deployed), the steady
-# incumbent (ai engineer) and the advisory outlier (ai strategy consultant).
-# Momentum's top 8 pulls in tiny terms that are noise at this scale.
-highlights <- c(FDE, "prompt engineer", "context engineer",
-                "ai engineer", "ai strategy consultant")
+# Hand-picked rather than taken from slice_max(momentum, n = 8): these four are
+# the succession narrative (prompt -> context -> forward deployed) plus the
+# steady incumbent (ai engineer). Momentum's top 8 pulls in tiny terms that are
+# noise at this scale. `ai strategy consultant` was a fifth line and is dropped:
+# at ~800/month it sits a decade and a half below the other three and made the
+# reader track a series that is not part of the succession story.
+highlights <- c(FDE, "prompt engineer", "context engineer", "ai engineer")
 stopifnot(all(highlights %in% career$keyword))
 
-hl_cols <- c(pal[["red"]], pal[["orange"]], pal[["blue"]], pal[["purple"]])
-names(hl_cols) <- setdiff(highlights, FDE)
-hl_cols[[FDE]] <- pal[["green"]]
+FDE_COL <- pal[["red"]]
+
+# One hue on the chart. FDE is the subject and takes the only colour; the
+# comparison titles are greys ramped by where they finish, so the tail ranks
+# itself - darkest is the highest last month - without asking the reader to
+# hold four arbitrary hue-to-title mappings.
+others   <- setdiff(highlights, FDE)
+last_val <- rolling |>
+  filter(keyword %in% others) |>
+  group_by(keyword) |>
+  arrange(month, .by_group = TRUE) |>
+  summarise(last_roll = last(roll_avg), .groups = "drop") |>
+  arrange(desc(last_roll))
+
+hl_cols <- setNames(colorRampPalette(c("#2E3338", "#949BA1"))(nrow(last_val)),
+                    last_val$keyword)
+hl_cols[[FDE]] <- FDE_COL
+
+# End labels are the only text a feed reader zooms into, so they run ~2.5x the
+# 3.5 the rest of the chart used. That costs panel width: the right-hand pad
+# below is sized to hold them.
+LAB_SIZE <- 8.2
+PAD_DAYS <- 700
+
+# Annotations are neutral so the only colour on either chart is FDE's.
+ANNO_COL <- "#3A4046"
 
 # Y floor at 10 rather than the series minimum: below that a log axis spends a
 # third of its height on rounding noise (94 of 9,597 career points, none of them
@@ -167,38 +198,43 @@ spag <- rolling |>
 labels <- spag |> filter(highlight) |> group_by(keyword) |>
   slice_max(month, n = 1) |> ungroup()
 
+# All four end labels go through one repel pass rather than placing FDE's by
+# hand: at 2.5x the old size its three lines span more vertical space than the
+# gap between 38,033 and ai engineer's 20,833, so a hand-placed FDE label sits
+# on top of the two below it. ggrepel has no markdown, so the bolding that used
+# to come from geom_richtext comes from the fontface aesthetic instead.
+end_labs <- labels |>
+  mutate(lab  = if_else(is_fde,
+                        paste0(str_replace(keyword, " engineer$", "\nengineer"),
+                               "\n", label_comma()(roll_avg), "/mo"),
+                        keyword),
+         face = if_else(is_fde, "bold", "plain"))
+
 fde_line <- filter(spag, is_fde)
 x_rng    <- range(as.Date(spag$month))
 
 p2 <- ggplot() +
   geom_line(data = filter(spag, !highlight),
             aes(month, roll_avg, group = keyword),
-            colour = "grey78", linewidth = 0.28, alpha = 0.45) +
+            colour = "grey80", linewidth = 0.28, alpha = 0.40) +
+  # Wider than the 1.1 v1 used: the highlighted lines are now greys themselves,
+  # so weight rather than hue is what separates them from the background mass.
   geom_line(data = filter(spag, highlight, !is_fde),
-            aes(month, roll_avg, colour = keyword), linewidth = 1.1) +
+            aes(month, roll_avg, colour = keyword), linewidth = 1.35) +
   # FDE gets a pale casing under a heavy stroke so it reads as the subject even
   # where it crosses the other highlighted lines.
   geom_line(data = fde_line, aes(month, roll_avg),
             colour = bg_plot, linewidth = 4.4, lineend = "round") +
   geom_line(data = fde_line, aes(month, roll_avg),
-            colour = pal[["green"]], linewidth = 2.3, lineend = "round") +
+            colour = FDE_COL, linewidth = 2.3, lineend = "round") +
   geom_point(data = filter(labels, is_fde), aes(month, roll_avg),
-             colour = pal[["green"]], size = 3.6) +
-  # ggrepel has no markdown, and the FDE label is the one that needs bolding -
-  # but it is also the only one with clear air around it, so it can be placed
-  # directly while the other four are repelled apart from each other.
-  ggtext::geom_richtext(
-    data = filter(labels, is_fde),
-    aes(month, roll_avg,
-        label = paste0("**", keyword, "**<br>", label_comma()(roll_avg), "/mo")),
-    hjust = 0, nudge_x = 40, size = 3.6, lineheight = 1.15,
-    colour = pal[["green"]], fill = NA, label.colour = NA,
-    label.padding = unit(1.5, "pt")) +
+             colour = FDE_COL, size = 4.2) +
   geom_text_repel(
-    data = filter(labels, !is_fde),
-    aes(month, roll_avg, label = keyword, colour = keyword),
-    hjust = 0, direction = "y", nudge_x = 40, size = 3.5,
-    min.segment.length = 0.2, segment.colour = "grey60", seed = 1) +
+    data = end_labs,
+    aes(month, roll_avg, label = lab, colour = keyword, fontface = face),
+    hjust = 0, direction = "y", nudge_x = 45, size = LAB_SIZE,
+    lineheight = 0.92, box.padding = 0.28, point.padding = 0.15,
+    min.segment.length = 0.3, segment.colour = "grey60", seed = 1) +
   scale_colour_manual(values = hl_cols) +
   # Log scale: the biggest career terms sit in the tens of thousands while the
   # emerging ones sit in the hundreds, so a linear axis flattens everything.
@@ -209,30 +245,22 @@ p2 <- ggplot() +
   # sequence, which ran the axis a year past the last month of data.
   scale_x_date(breaks = unique(c(seq(x_rng[1], x_rng[2], by = "6 months"), x_rng[2])),
                date_labels = "%b %Y",
-               # Pad in days, sized to the longest end-label ("forward deployed
-               # engineer"), which otherwise clips against the panel edge.
-               limits = c(x_rng[1], x_rng[2] + 430),
+               # Pad in days, sized to the longest end-label line. It was 430 at
+               # label size 3.5; the labels now run 2.5x that, so the pad has to
+               # grow with them or they clip against the panel edge.
+               limits = c(x_rng[1], x_rng[2] + PAD_DAYS),
                expand = expansion(mult = c(0.02, 0))) +
   labs(
     title = "\"Forward deployed engineer\" is now America's most-searched AI career title",
-    subtitle = glue(
-      "Each grey line is one of {nrow(career)} AI career search terms. ",
-      "<span style='color:{pal[['green']]}'>**Forward deployed engineer**</span> was flat at ",
-      "~400/month for the first two and a half years, then overtook the entire field. ",
-      "<span style='color:{pal[['red']]}'>**Prompt engineer**</span> and ",
-      "<span style='color:{pal[['orange']]}'>**context engineer**</span> have both peaked and ",
-      "turned down; <span style='color:{pal[['blue']]}'>**AI engineer**</span> and ",
-      "<span style='color:{pal[['purple']]}'>**AI strategy consultant**</span> keep climbing. ",
-      "3-month rolling average, log scale."),
-    x = NULL, y = "Searches per month", caption = CAPTION) +
+    x = NULL, y = "Searches per month", caption = CAPTION_SHORT) +
   theme_post()
 save_chart(p2, "02_spaghetti_career.png", 12, 8)
 
 # =============================================================================
-# 2b. Same five lines, no spaghetti - plus the Karpathy annotation
+# 2b. Same four lines, no spaghetti - plus the Karpathy annotation
 # =============================================================================
 # A stripped version of chart 2 for the post itself. The 255 grey lines are the
-# evidence that the five are not cherry-picked, which matters in a report and
+# evidence that the four are not cherry-picked, which matters in a report and
 # costs legibility in a feed, so the variant drops them. Everything else - the
 # palette, the FDE casing, the log axis, the end labels - is identical, so the
 # two charts read as the same chart twice rather than as two charts.
@@ -253,76 +281,64 @@ KARPATHY_MONTH <- as.Date("2025-06-01")   # the tweet month, first month of lift
 ce_anchor <- spag |> filter(keyword == "context engineer",
                             as.Date(month) == KARPATHY_MONTH)
 
-# Y floor lifted from 10 to 20: without the grey mass there is nothing below
-# `ai strategy consultant`'s 27, and the empty decade was only ever there to
-# hold the spaghetti.
-Y_FLOOR_5 <- 20
+# Y floor lifted from 10 to 40: without the grey mass, and without
+# `ai strategy consultant`, the lowest point on the chart is context engineer's
+# 57. The empty decades below were only ever there to hold the spaghetti.
+Y_FLOOR_5 <- 40
 
 spag5 <- filter(spag, highlight)
 
 p2b <- ggplot() +
   geom_line(data = filter(spag5, !is_fde),
-            aes(month, roll_avg, colour = keyword), linewidth = 1.2) +
+            aes(month, roll_avg, colour = keyword), linewidth = 1.35) +
   geom_line(data = fde_line, aes(month, roll_avg),
             colour = bg_plot, linewidth = 4.4, lineend = "round") +
   geom_line(data = fde_line, aes(month, roll_avg),
-            colour = pal[["green"]], linewidth = 2.3, lineend = "round") +
+            colour = FDE_COL, linewidth = 2.3, lineend = "round") +
   geom_point(data = filter(labels, is_fde), aes(month, roll_avg),
-             colour = pal[["green"]], size = 3.6) +
+             colour = FDE_COL, size = 4.2) +
 
   # --- the annotation -------------------------------------------------------
   # Drawn before the labels so nothing of the arrow crosses a line label. The
   # curve arcs left-and-up out of the text block to the elbow, which keeps it
   # clear of the context engineer line's near-vertical segment.
+  # Neutral dark, not orange: red is now reserved for FDE, and a third hue on a
+  # two-tone chart reads as a fourth series. The arrow lands on the point, so
+  # the annotation does not need colour to say which line it is about.
   geom_point(data = ce_anchor, aes(month, roll_avg),
-             colour = pal[["orange"]], size = 3.2) +
-  geom_curve(aes(x = as.Date("2025-09-20"), y = 175,
+             colour = ANNO_COL, size = 3.2) +
+  geom_curve(aes(x = as.Date("2025-09-20"), y = 385,
                  xend = KARPATHY_MONTH + 20, yend = ce_anchor$roll_avg * 0.84),
              curvature = 0.42, angle = 105, ncp = 14,
              arrow = arrow(length = unit(0.022, "npc"), type = "closed"),
-             colour = pal[["orange"]], linewidth = 0.6) +
+             colour = ANNO_COL, linewidth = 0.6) +
   ggimage::geom_image(
-    data = data.frame(x = as.Date("2025-12-10"), y = 108),
+    data = data.frame(x = as.Date("2025-12-10"), y = 235),
     aes(x, y), image = KARPATHY_IMG, size = 0.10, asp = 12 / 8) +
   ggtext::geom_richtext(
-    data = data.frame(x = as.Date("2025-12-10"), y = 30),
+    data = data.frame(x = as.Date("2025-12-10"), y = 68),
     aes(x, y, label = paste0(
       "**Karpathy tweets<br>\"context engineering\"**<br>",
       "<span style='font-size:8pt'>25 Jun 2025</span>")),
-    size = 3.5, lineheight = 1.25, colour = pal[["orange"]],
+    size = 3.5, lineheight = 1.25, colour = ANNO_COL,
     fill = NA, label.colour = NA, label.padding = unit(2, "pt")) +
 
-  ggtext::geom_richtext(
-    data = filter(labels, is_fde),
-    aes(month, roll_avg,
-        label = paste0("**", keyword, "**<br>", label_comma()(roll_avg), "/mo")),
-    hjust = 0, nudge_x = 40, size = 3.6, lineheight = 1.15,
-    colour = pal[["green"]], fill = NA, label.colour = NA,
-    label.padding = unit(1.5, "pt")) +
   geom_text_repel(
-    data = filter(labels, !is_fde),
-    aes(month, roll_avg, label = keyword, colour = keyword),
-    hjust = 0, direction = "y", nudge_x = 40, size = 3.5,
-    min.segment.length = 0.2, segment.colour = "grey60", seed = 1) +
+    data = end_labs,
+    aes(month, roll_avg, label = lab, colour = keyword, fontface = face),
+    hjust = 0, direction = "y", nudge_x = 45, size = LAB_SIZE,
+    lineheight = 0.92, box.padding = 0.28, point.padding = 0.15,
+    min.segment.length = 0.3, segment.colour = "grey60", seed = 1) +
   scale_colour_manual(values = hl_cols) +
   scale_y_log10(labels = label_comma(), limits = c(Y_FLOOR_5, NA),
-                breaks = c(20, 100, 1000, 10000, 50000)) +
+                breaks = c(50, 100, 1000, 10000, 50000)) +
   scale_x_date(breaks = unique(c(seq(x_rng[1], x_rng[2], by = "6 months"), x_rng[2])),
                date_labels = "%b %Y",
-               limits = c(x_rng[1], x_rng[2] + 430),
+               limits = c(x_rng[1], x_rng[2] + PAD_DAYS),
                expand = expansion(mult = c(0.02, 0))) +
   labs(
     title = "\"Forward deployed engineer\" is now America's most-searched AI career title",
-    subtitle = glue(
-      "Five AI career search terms, US. ",
-      "<span style='color:{pal[['green']]}'>**Forward deployed engineer**</span> was flat at ",
-      "~400/month for the first two and a half years, then overtook the entire field. ",
-      "<span style='color:{pal[['red']]}'>**Prompt engineer**</span> and ",
-      "<span style='color:{pal[['orange']]}'>**context engineer**</span> have both peaked and ",
-      "turned down; <span style='color:{pal[['blue']]}'>**AI engineer**</span> and ",
-      "<span style='color:{pal[['purple']]}'>**AI strategy consultant**</span> keep climbing. ",
-      "3-month rolling average, log scale."),
-    x = NULL, y = "Searches per month", caption = CAPTION) +
+    x = NULL, y = "Searches per month", caption = CAPTION_SHORT) +
   theme_post()
 save_chart(p2b, "02b_spaghetti_five_karpathy.png", 12, 8)
 
