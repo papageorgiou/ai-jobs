@@ -157,32 +157,22 @@ save_chart(p1, "01_intent_split.png", 11, 7)
 highlights <- c(FDE, "prompt engineer", "context engineer", "ai engineer")
 stopifnot(all(highlights %in% career$keyword))
 
+# Red is the subject's colour, not prompt engineer's. That is a swap from the
+# earlier version of this chart, where FDE was green and red went to the term
+# with the tallest peak - which put the loudest colour on the line the chart is
+# arguing *against*. Prompt engineer takes the purple freed up by dropping
+# `ai strategy consultant`; ai engineer and context engineer keep blue and
+# orange, so only two of the four mappings moved.
 FDE_COL <- pal[["red"]]
-
-# One hue on the chart. FDE is the subject and takes the only colour; the
-# comparison titles are greys ramped by where they finish, so the tail ranks
-# itself - darkest is the highest last month - without asking the reader to
-# hold four arbitrary hue-to-title mappings.
-others   <- setdiff(highlights, FDE)
-last_val <- rolling |>
-  filter(keyword %in% others) |>
-  group_by(keyword) |>
-  arrange(month, .by_group = TRUE) |>
-  summarise(last_roll = last(roll_avg), .groups = "drop") |>
-  arrange(desc(last_roll))
-
-hl_cols <- setNames(colorRampPalette(c("#2E3338", "#949BA1"))(nrow(last_val)),
-                    last_val$keyword)
+hl_cols <- c(pal[["purple"]], pal[["orange"]], pal[["blue"]])
+names(hl_cols) <- c("prompt engineer", "context engineer", "ai engineer")
 hl_cols[[FDE]] <- FDE_COL
+stopifnot(setequal(names(hl_cols), highlights))
 
-# End labels are the only text a feed reader zooms into, so they run ~2.5x the
-# 3.5 the rest of the chart used. That costs panel width: the right-hand pad
-# below is sized to hold them.
-LAB_SIZE <- 8.2
-PAD_DAYS <- 700
-
-# Annotations are neutral so the only colour on either chart is FDE's.
-ANNO_COL <- "#3A4046"
+# End labels run 1.5x the 3.5 the rest of the chart uses - they are the only
+# text a feed reader zooms into. The right-hand pad below grows with them.
+LAB_SIZE <- 5.3
+PAD_DAYS <- 650
 
 # Y floor at 10 rather than the series minimum: below that a log axis spends a
 # third of its height on rounding noise (94 of 9,597 career points, none of them
@@ -198,29 +188,15 @@ spag <- rolling |>
 labels <- spag |> filter(highlight) |> group_by(keyword) |>
   slice_max(month, n = 1) |> ungroup()
 
-# All four end labels go through one repel pass rather than placing FDE's by
-# hand: at 2.5x the old size its three lines span more vertical space than the
-# gap between 38,033 and ai engineer's 20,833, so a hand-placed FDE label sits
-# on top of the two below it. ggrepel has no markdown, so the bolding that used
-# to come from geom_richtext comes from the fontface aesthetic instead.
-end_labs <- labels |>
-  mutate(lab  = if_else(is_fde,
-                        paste0(str_replace(keyword, " engineer$", "\nengineer"),
-                               "\n", label_comma()(roll_avg), "/mo"),
-                        keyword),
-         face = if_else(is_fde, "bold", "plain"))
-
 fde_line <- filter(spag, is_fde)
 x_rng    <- range(as.Date(spag$month))
 
 p2 <- ggplot() +
   geom_line(data = filter(spag, !highlight),
             aes(month, roll_avg, group = keyword),
-            colour = "grey80", linewidth = 0.28, alpha = 0.40) +
-  # Wider than the 1.1 v1 used: the highlighted lines are now greys themselves,
-  # so weight rather than hue is what separates them from the background mass.
+            colour = "grey78", linewidth = 0.28, alpha = 0.45) +
   geom_line(data = filter(spag, highlight, !is_fde),
-            aes(month, roll_avg, colour = keyword), linewidth = 1.35) +
+            aes(month, roll_avg, colour = keyword), linewidth = 1.1) +
   # FDE gets a pale casing under a heavy stroke so it reads as the subject even
   # where it crosses the other highlighted lines.
   geom_line(data = fde_line, aes(month, roll_avg),
@@ -228,13 +204,22 @@ p2 <- ggplot() +
   geom_line(data = fde_line, aes(month, roll_avg),
             colour = FDE_COL, linewidth = 2.3, lineend = "round") +
   geom_point(data = filter(labels, is_fde), aes(month, roll_avg),
-             colour = FDE_COL, size = 4.2) +
+             colour = FDE_COL, size = 3.6) +
+  # ggrepel has no markdown, and the FDE label is the one that needs bolding -
+  # but it is also the only one with clear air around it, so it can be placed
+  # directly while the other three are repelled apart from each other.
+  ggtext::geom_richtext(
+    data = filter(labels, is_fde),
+    aes(month, roll_avg,
+        label = paste0("**", keyword, "**<br>", label_comma()(roll_avg), "/mo")),
+    hjust = 0, nudge_x = 40, size = LAB_SIZE, lineheight = 1.15,
+    colour = FDE_COL, fill = NA, label.colour = NA,
+    label.padding = unit(1.5, "pt")) +
   geom_text_repel(
-    data = end_labs,
-    aes(month, roll_avg, label = lab, colour = keyword, fontface = face),
-    hjust = 0, direction = "y", nudge_x = 45, size = LAB_SIZE,
-    lineheight = 0.92, box.padding = 0.28, point.padding = 0.15,
-    min.segment.length = 0.3, segment.colour = "grey60", seed = 1) +
+    data = filter(labels, !is_fde),
+    aes(month, roll_avg, label = keyword, colour = keyword),
+    hjust = 0, direction = "y", nudge_x = 40, size = LAB_SIZE,
+    min.segment.length = 0.2, segment.colour = "grey60", seed = 1) +
   scale_colour_manual(values = hl_cols) +
   # Log scale: the biggest career terms sit in the tens of thousands while the
   # emerging ones sit in the hundreds, so a linear axis flattens everything.
@@ -245,9 +230,9 @@ p2 <- ggplot() +
   # sequence, which ran the axis a year past the last month of data.
   scale_x_date(breaks = unique(c(seq(x_rng[1], x_rng[2], by = "6 months"), x_rng[2])),
                date_labels = "%b %Y",
-               # Pad in days, sized to the longest end-label line. It was 430 at
-               # label size 3.5; the labels now run 2.5x that, so the pad has to
-               # grow with them or they clip against the panel edge.
+               # Pad in days, sized to the longest end-label ("forward deployed
+               # engineer"), which otherwise clips against the panel edge. It
+               # scales with LAB_SIZE - it was 430 back when the labels were 3.5.
                limits = c(x_rng[1], x_rng[2] + PAD_DAYS),
                expand = expansion(mult = c(0.02, 0))) +
   labs(
@@ -290,28 +275,25 @@ spag5 <- filter(spag, highlight)
 
 p2b <- ggplot() +
   geom_line(data = filter(spag5, !is_fde),
-            aes(month, roll_avg, colour = keyword), linewidth = 1.35) +
+            aes(month, roll_avg, colour = keyword), linewidth = 1.2) +
   geom_line(data = fde_line, aes(month, roll_avg),
             colour = bg_plot, linewidth = 4.4, lineend = "round") +
   geom_line(data = fde_line, aes(month, roll_avg),
             colour = FDE_COL, linewidth = 2.3, lineend = "round") +
   geom_point(data = filter(labels, is_fde), aes(month, roll_avg),
-             colour = FDE_COL, size = 4.2) +
+             colour = FDE_COL, size = 3.6) +
 
   # --- the annotation -------------------------------------------------------
   # Drawn before the labels so nothing of the arrow crosses a line label. The
   # curve arcs left-and-up out of the text block to the elbow, which keeps it
   # clear of the context engineer line's near-vertical segment.
-  # Neutral dark, not orange: red is now reserved for FDE, and a third hue on a
-  # two-tone chart reads as a fourth series. The arrow lands on the point, so
-  # the annotation does not need colour to say which line it is about.
   geom_point(data = ce_anchor, aes(month, roll_avg),
-             colour = ANNO_COL, size = 3.2) +
+             colour = pal[["orange"]], size = 3.2) +
   geom_curve(aes(x = as.Date("2025-09-20"), y = 385,
                  xend = KARPATHY_MONTH + 20, yend = ce_anchor$roll_avg * 0.84),
              curvature = 0.42, angle = 105, ncp = 14,
              arrow = arrow(length = unit(0.022, "npc"), type = "closed"),
-             colour = ANNO_COL, linewidth = 0.6) +
+             colour = pal[["orange"]], linewidth = 0.6) +
   ggimage::geom_image(
     data = data.frame(x = as.Date("2025-12-10"), y = 235),
     aes(x, y), image = KARPATHY_IMG, size = 0.10, asp = 12 / 8) +
@@ -320,15 +302,21 @@ p2b <- ggplot() +
     aes(x, y, label = paste0(
       "**Karpathy tweets<br>\"context engineering\"**<br>",
       "<span style='font-size:8pt'>25 Jun 2025</span>")),
-    size = 3.5, lineheight = 1.25, colour = ANNO_COL,
+    size = 3.5, lineheight = 1.25, colour = pal[["orange"]],
     fill = NA, label.colour = NA, label.padding = unit(2, "pt")) +
 
+  ggtext::geom_richtext(
+    data = filter(labels, is_fde),
+    aes(month, roll_avg,
+        label = paste0("**", keyword, "**<br>", label_comma()(roll_avg), "/mo")),
+    hjust = 0, nudge_x = 40, size = LAB_SIZE, lineheight = 1.15,
+    colour = FDE_COL, fill = NA, label.colour = NA,
+    label.padding = unit(1.5, "pt")) +
   geom_text_repel(
-    data = end_labs,
-    aes(month, roll_avg, label = lab, colour = keyword, fontface = face),
-    hjust = 0, direction = "y", nudge_x = 45, size = LAB_SIZE,
-    lineheight = 0.92, box.padding = 0.28, point.padding = 0.15,
-    min.segment.length = 0.3, segment.colour = "grey60", seed = 1) +
+    data = filter(labels, !is_fde),
+    aes(month, roll_avg, label = keyword, colour = keyword),
+    hjust = 0, direction = "y", nudge_x = 40, size = LAB_SIZE,
+    min.segment.length = 0.2, segment.colour = "grey60", seed = 1) +
   scale_colour_manual(values = hl_cols) +
   scale_y_log10(labels = label_comma(), limits = c(Y_FLOOR_5, NA),
                 breaks = c(50, 100, 1000, 10000, 50000)) +
