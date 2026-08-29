@@ -212,7 +212,7 @@ p4 <- career |> slice_max(net_change, n = 20) |>
             hjust = -0.15, size = 3.2, colour = text_axes) +
   scale_fill_manual(values = c(`TRUE` = pal[["green"]], `FALSE` = pal[["blue"]])) +
   scale_x_continuous(labels = label_comma(), expand = expansion(mult = c(0, 0.16))) +
-  labs(title = "One title added more searches than the rest combined",
+  labs(title = "The titles that added the most searches per month",
        x = "Searches per month gained, first year vs last", y = NULL, caption = CAPTION) +
   theme_post()
 save_chart(p4, "04_net_gain.png", 10, 8)
@@ -250,7 +250,7 @@ p6 <- rolling |> filter(keyword %in% consistent) |>
   geom_line(colour = pal[["blue"]], linewidth = 0.75) +
   facet_wrap(~keyword, scales = "free_y", ncol = 4) +
   scale_y_continuous(labels = label_comma(), n.breaks = 3) +
-  labs(title = "Titles rising steadily, not spiking",
+  labs(title = "Titles that climbed steadily over four years",
        x = NULL,
        y = "Searches per month (3-month rolling average; each panel has its own scale)",
        caption = CAPTION) +
@@ -291,7 +291,7 @@ cluster_chart("function_",
               "07_by_function.png")
 
 cluster_chart("seniority",
-              "People search the role, not the seniority level",
+              "Almost nobody searches with a seniority level attached",
               "08_by_seniority.png")
 
 cluster_chart("domain",
@@ -407,7 +407,7 @@ p13 <- ggplot(fde_ts, aes(month, searches)) +
                   nudge_y = -7000, nudge_x = -260, size = 3.3, lineheight = 1,
                   colour = text_axes, segment.colour = "grey55", seed = 12) +
   scale_y_continuous(labels = label_comma()) +
-  labs(title = "Forward deployed engineer, a step change not a trend",
+  labs(title = "Forward deployed engineer went from flat to 40,000 a month",
        x = NULL, y = "Searches per month", caption = CAPTION) +
   theme_post()
 save_chart(p13, "13_fde_stepchange.png", 12, 7)

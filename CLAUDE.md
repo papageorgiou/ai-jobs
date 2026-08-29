@@ -53,8 +53,19 @@ unset MASTER_CSV OUTPUT_DIR
 
 Rscript 04_charts_v2.R        # -> output_v2/charts/*.png (reads output_v2/ directly)
 Rscript 04_charts_v2_karpathy.R  # -> output_v2/charts_karpathy/*.png (four layouts)
+Rscript 04_charts_v2_simple.R    # -> output_v2/charts_simple/*.png (plain titles, no subtitles)
 quarto render report_v2.qmd   # -> report_v2.pdf
 ```
+
+The public article:
+
+```
+cd site && quarto render   # -> docs/index.html, served by GitHub Pages from main /docs
+```
+
+`site/` holds the article source and its own copy of the charts it uses, taken from
+`output_v2/charts_simple/`. Charts are copied rather than referenced so a chart re-run cannot
+silently change a published figure. Re-copy deliberately when a chart is meant to change.
 
 Never skip `00b_preflight.py`. It exercises the same `get_volumes` entry point the real pull
 uses and catches bad credentials, the gRPC/proxy CA block, and wrong location/language wiring in

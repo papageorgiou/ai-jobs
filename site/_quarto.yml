@@ -1,0 +1,19 @@
+project:
+  type: default
+  output-dir: ../docs
+
+format:
+  html:
+    theme: [cosmo, styles.scss]
+    toc: true
+    toc-location: right
+    toc-title: On this page
+    toc-depth: 2
+    anchor-sections: true
+    fig-align: center
+    link-external-newwindow: true
+    citations-hover: false
+    smooth-scroll: true
+    page-layout: article
+    title-block-banner: false
+    email-obfuscation: references

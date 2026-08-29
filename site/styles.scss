@@ -1,0 +1,67 @@
+/*-- scss:defaults --*/
+$font-family-sans-serif: "Helvetica Neue", Helvetica, Arial, sans-serif;
+$body-bg: #FAF8F5;
+$body-color: #2B2F33;
+$link-color: #13734A;
+$font-size-root: 17px;
+$h1-font-size: 2.1rem;
+$h2-font-size: 1.4rem;
+$toc-color: #6c757d;
+
+/*-- scss:rules --*/
+body {
+  line-height: 1.65;
+}
+
+main {
+  max-width: 46rem;
+}
+
+#title-block-header .quarto-title .title {
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  color: #5a6169;
+  font-size: 1.05rem;
+  font-weight: 400;
+  margin-top: 0.4rem;
+}
+
+h2 {
+  margin-top: 2.6rem;
+  margin-bottom: 0.9rem;
+  letter-spacing: -0.005em;
+}
+
+figure {
+  margin: 2.2rem 0;
+}
+
+figure img {
+  border: 1px solid #E2D6CB;
+  border-radius: 3px;
+}
+
+figcaption {
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-top: 0.6rem;
+}
+
+blockquote {
+  border-left: 3px solid #E2D6CB;
+  color: #5a6169;
+  font-size: 0.95rem;
+  padding-left: 1rem;
+}
+
+.callout-note {
+  background: #F6EFE8;
+}
+
+a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
