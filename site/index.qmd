@@ -18,8 +18,6 @@ I pulled monthly US Google search volume for 1,053 AI job titles, covering Augus
 - **It works before anything else has data.** A new title has no job postings, no salary survey and no entry in any official taxonomy. It still shows up in search the moment people start looking it up.
 - **It leads the formal record.** People search a title before they apply for it, and long before an institution agrees the title exists.
 
-The obvious limits apply and I come back to them at the end.
-
 ## What I pulled
 
 The title list was assembled from four independently generated sources, then filtered for an AI signal in the name. Of the 1,053 titles, 289 had enough consistent volume to model. The rest sit at or near zero.
@@ -35,10 +33,6 @@ Forward deployed engineer sat flat at about 400 searches a month for 29 months. 
 The title is not new. Palantir created it around 2005 for engineers who go and sit with the customer, live inside the problem and build the solution on site. What changed is who uses it. [OpenAI and Anthropic both built the role into their enterprise businesses](https://thenewstack.io/forward-deployed-engineers-ai/), OpenAI under a deployment organisation and Anthropic under applied AI, and the rest of the enterprise AI market followed.
 
 The reason is unglamorous and important. Models got good enough for most enterprise use cases. The difficulty moved to the last mile: connecting a model to the actual systems of record, ticketing platforms, ERP layers and knowledge bases that a pilot is carefully designed to avoid touching. MIT's NANDA project found that [around 95% of enterprise generative AI pilots deliver no measurable return](https://finance.yahoo.com/news/mit-report-95-generative-ai-105412686.html). When the model works and the deployment does not, you hire people whose entire job is deployment. [TechTarget's write-up of the role](https://www.techtarget.com/ai/feature/The-rise-of-the-AI-forward-deployed-engineer) makes the same point from the vendor side.
-
-There is a second reason this title matters to me, and it is about method. My filter looked for an AI signal in the name: AI, LLM, agentic, prompt. "Forward deployed engineer" contains none of those words, so it never entered the study. I had to add it by hand after noticing it elsewhere.
-
-A rule-based filter misses exactly the roles whose names have not caught up with what they do. Those are usually the interesting ones.
 
 ## Titles keep replacing titles
 
@@ -97,13 +91,6 @@ Of the 260 career titles, 208 carry no seniority word at all. Industry is the sa
 People search "ai engineer". Very few add "senior" in front of it, and very few add "healthcare" either. The plain title carries essentially all the demand.
 
 That has a direct practical use. If you are naming a role, writing about one or trying to be found for one, the unqualified title is the one people look for. Each qualifier you add cuts the audience by a large factor.
-
-## What I would not claim from this
-
-- **These are rounded buckets.** Google Keyword Planner returns values snapped to a grid, and volumes can be inflated by automated traffic. Treat every figure as an order of magnitude with a direction attached.
-- **A search is curiosity.** It is evidence that people want to know about a job. It is not a job opening, a hire or a salary.
-- **The headline finding could revert.** Context engineer passed exactly the same test a year ago and then gave back three quarters of its peak. What makes forward deployed engineer more convincing is duration, eighteen consecutive months of increase with the last three at the top, but that is a judgement rather than a proof.
-- **The reported average is misleading for anything that stepped up.** Keyword Planner's headline figure is a trailing twelve month mean. For forward deployed engineer it reports a number that is roughly half the current running level, describing no actual month. I rank on the last three months wherever the ranking is the point.
 
 The code, the title list and every chart are in the [repository](https://github.com/papageorgiou/ai-jobs).
 
