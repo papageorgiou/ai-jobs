@@ -14,10 +14,13 @@
 #   - the top break was 50,000 while "prompt engineer" peaks at 65,000, so the
 #     series ran off past the last labelled line with nothing to measure it
 #     against. The axis now closes at 100,000 and the peak sits inside it
-#   - minor gridlines are switched on at 2x-9x each decade. With four labelled
-#     lines over three and a half decades there was nothing to read 600 or
-#     38,033 against; on a log axis the minor lines are what make the decades
-#     legible, and they are the visual cue that the scale is log at all
+# The grid stays plain: one horizontal line per decade, one vertical per six
+# months, nothing between them. A first cut of this script switched on log minor
+# gridlines at 2x-9x each decade on the argument that they are what makes a log
+# axis readable. They also put roughly forty extra lines behind a chart that
+# already carries 200 grey spaghetti strands, and the ruled-paper texture read
+# louder than the data. The four decade lines are the structure; a reader who
+# needs 38,033 to the digit is reading the wrong chart.
 #
 # The floors stay as they were - 40 for the four-line layouts, 10 for the
 # spaghetti - because they are set by the data, not the break sequence. The
@@ -58,9 +61,7 @@ theme_post <- function(base_size = 13) {
       plot.background   = element_rect(fill = bg_figure, colour = NA),
       panel.background  = element_rect(fill = bg_plot, colour = NA),
       panel.grid.major  = element_line(colour = gridlines, linewidth = 0.3),
-      # On rather than blank: see the header. Half the weight of the major
-      # lines so the decades still read as the structure.
-      panel.grid.minor  = element_line(colour = gridlines, linewidth = 0.15),
+      panel.grid.minor  = element_blank(),
       text              = element_text(colour = text_axes),
       plot.title        = element_markdown(size = rel(1.45), face = "bold", hjust = 0,
                                            margin = margin(b = 16), lineheight = 1.25),
@@ -188,10 +189,9 @@ end_labels <- list(
 
 TITLE <- "\"Forward deployed engineer\" is now America's most-searched AI career title"
 
-# Every power of ten in range, and 2x-9x of each as minors.
-Y_TOP        <- 1e5
-DECADES      <- 10^(1:5)
-MINOR_BREAKS <- as.vector(outer(1:9, 10^(0:4)))
+# Every power of ten in range, and nothing between them.
+Y_TOP   <- 1e5
+DECADES <- 10^(1:5)
 
 base_chart <- function(spaghetti, y_floor, pad = PAD_DAYS) {
   layers <- list()
@@ -208,7 +208,7 @@ base_chart <- function(spaghetti, y_floor, pad = PAD_DAYS) {
   ggplot() + layers + fde_layers +
     scale_colour_manual(values = hl_cols) +
     scale_y_log10(labels = label_comma(), limits = c(y_floor, Y_TOP),
-                  breaks = DECADES, minor_breaks = MINOR_BREAKS) +
+                  breaks = DECADES) +
     scale_x_date(breaks = unique(c(seq(x_rng[1], x_rng[2], by = "6 months"), x_rng[2])),
                  date_labels = "%b %Y",
                  limits = c(x_rng[1], x_rng[2] + pad),
