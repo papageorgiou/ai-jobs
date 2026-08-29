@@ -41,3 +41,8 @@ report_v2_files/
 # GitHub's 100MB file limit.
 *.mov
 *.mp4
+
+# Generated deck artefacts. slides.qmd + the PNGs rebuild slides.html in one
+# quarto render, and the embedded-resources copy is 5MB of base64.
+slides.html
+slides_files/

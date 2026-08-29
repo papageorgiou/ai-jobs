@@ -1,0 +1,98 @@
+---
+title: "The AI job title nobody was tracking"
+format:
+  revealjs:
+    theme: simple
+    width: 1920
+    height: 1080
+    margin: 0
+    controls: true
+    progress: true
+    slide-number: false
+    embed-resources: true
+    background-color: "#FAF8F5"
+---
+
+## {background-image="output_v2/slides_video/01_hook.png" background-size="contain" background-color="#FAF8F5"}
+
+::: {.notes}
+The most-searched AI job title in America right now is one almost nobody was tracking.
+:::
+
+## {background-image="output_v2/slides_video/02_reveal.png" background-size="contain" background-color="#FAF8F5"}
+
+::: {.notes}
+Forward deployed engineer.
+:::
+
+## {background-image="output_v2/slides_video/03_palantir.png" background-size="contain" background-color="#FAF8F5"}
+
+::: {.notes}
+Palantir coined it over a decade ago - an engineer embedded with the customer. It stayed a Palantir word for about ten years.
+:::
+
+## {background-image="output_v2/slides_video/04_forty_x.png" background-size="contain" background-color="#FAF8F5"}
+
+::: {.notes}
+Then it went up about forty times in eighteen months.
+:::
+
+## {background-image="output_v2/slides_video/05_method.png" background-size="contain" background-color="#FAF8F5"}
+
+::: {.notes}
+Four years of US Google search volume, every AI job title I could assemble.
+:::
+
+## {background-image="output_v2/slides_video/06_honest_signal.png" background-size="contain" background-color="#FAF8F5"}
+
+::: {.notes}
+Nobody types a job title into Google to look good. It is one of the few honest signals we have.
+:::
+
+## {background-image="output_v2/slides_video/07_four_lines.png" background-size="contain" background-color="#FAF8F5"}
+
+::: {.notes}
+Four titles carry the whole chart.
+:::
+
+## {background-image="output_v2/slides_video/08_fde.png" background-size="contain" background-color="#FAF8F5"}
+
+::: {.notes}
+Forward deployed engineer went from an in-joke to the top of the list.
+:::
+
+## {background-image="output_v2/slides_video/09_prompt_engineer.png" background-size="contain" background-color="#FAF8F5"}
+
+::: {.notes}
+Prompt engineer, the first title to break out after ChatGPT, peaked in spring 2023 and has slid ever since.
+:::
+
+## {background-image="output_v2/slides_video/10_karpathy.png" background-size="contain" background-color="#FAF8F5"}
+
+::: {.notes}
+Context engineer was flat for almost three years. Then Karpathy posted this.
+:::
+
+## {background-image="output_v2/slides_video/11_context_engineer.png" background-size="contain" background-color="#FAF8F5"}
+
+::: {.notes}
+The line turns in the same weeks - then gives most of it back. Excellent post. Weak job title.
+:::
+
+## {background-image="output_v2/slides_video/12_ai_engineer.png" background-size="contain" background-color="#FAF8F5"}
+
+::: {.notes}
+AI engineer just climbs. No spike, no collapse. The dullest line on the chart, and the one I trust most.
+:::
+
+## {background-image="output_v2/slides_video/13_duration.png" background-size="contain" background-color="#FAF8F5"}
+
+::: {.notes}
+The difference is duration. Spread through hiring, a title climbs for months and holds. Spread through a post, it climbs for weeks and gives it back.
+:::
+
+## {background-image="output_v2/slides_video/14_kicker.png" background-size="contain" background-color="#FAF8F5"}
+
+::: {.notes}
+And standing inside the spike, the two look identical.
+:::
