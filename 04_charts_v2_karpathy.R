@@ -74,9 +74,12 @@ rolling  <- read_parquet(file.path(IN_DIR, "rolling.parquet")) |>
   left_join(clusters |> select(keyword, intent), by = "keyword")
 
 win     <- range(as.Date(rolling$month))
+# One line, not two. At 9.75pt across 12 inches the whole credit fits on a
+# single row with room to spare, and a two-line caption under a chart this tall
+# reads as a second block of content rather than a footer.
 CAPTION <- paste0(
   "Source: Google Data, US, ", format(win[1], "%b %Y"), " - ", format(win[2], "%b %Y"), ".",
-  "\nAnalysis & code: github.com/papageorgiou/ai-jobs   |   @alex_papageo")
+  "   Analysis & code: github.com/papageorgiou/ai-jobs   |   @alex_papageo")
 
 FDE        <- "forward deployed engineer"
 highlights <- c(FDE, "prompt engineer", "context engineer", "ai engineer")
@@ -122,13 +125,16 @@ CE_Y <- ce_anchor$roll_avg
 IMG_SIZE <- 0.135   # was 0.10; the face is the thing people stop scrolling for
 
 karpathy_anno <- function(x_img, y_img, y_txt, x_start, y_start, curvature,
-                          x_end = KARPATHY_MONTH + 10, y_end = CE_Y * 0.90) {
+                          x_end = KARPATHY_MONTH + 12, y_end = CE_Y) {
   list(
     geom_point(data = ce_anchor, aes(month, roll_avg),
                colour = CTX_COL, size = 3.4),
-    # Head lands just short of the dot on the line joining the two, so the
-    # arrow reads as touching it. Drawn before the end labels so that if the
-    # curve ever runs long it passes under them, not over.
+    # Head lands on the dot's centre height and just off its right edge: y_end
+    # is CE_Y exactly, x_end about a dot-radius clear of it. It used to end at
+    # CE_Y * 0.90, which on a log axis is a visible drop below the dot, so the
+    # arrow pointed at the gap under the anchor rather than at the anchor.
+    # Drawn before the end labels so that if the curve ever runs long it passes
+    # under them, not over.
     geom_curve(aes(x = x_start, y = y_start, xend = x_end, yend = y_end),
                curvature = curvature, angle = 100, ncp = 16,
                arrow = arrow(length = unit(0.020, "npc"), type = "closed"),

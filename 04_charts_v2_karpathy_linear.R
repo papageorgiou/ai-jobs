@@ -79,9 +79,12 @@ rolling  <- read_parquet(file.path(IN_DIR, "rolling.parquet")) |>
   left_join(clusters |> select(keyword, intent), by = "keyword")
 
 win     <- range(as.Date(rolling$month))
+# One line, not two. At 9.75pt across 12 inches the whole credit fits on a
+# single row with room to spare, and a two-line caption under a chart this tall
+# reads as a second block of content rather than a footer.
 CAPTION <- paste0(
   "Source: Google Data, US, ", format(win[1], "%b %Y"), " - ", format(win[2], "%b %Y"), ".",
-  "\nAnalysis & code: github.com/papageorgiou/ai-jobs   |   @alex_papageo")
+  "   Analysis & code: github.com/papageorgiou/ai-jobs   |   @alex_papageo")
 
 FDE        <- "forward deployed engineer"
 highlights <- c(FDE, "prompt engineer", "context engineer", "ai engineer")
@@ -162,7 +165,7 @@ karpathy_head <- function(x_img, y_img, y_txt) {
 # "ai engineer", which a dashed rule at a fixed x is allowed to do - that is how
 # an event marker looks.
 anno_inline <- function(y_img = 56000, y_txt = 44000, y_drop = 39000) {
-  c(list(leader_seg(KARPATHY_MONTH, y_drop, KARPATHY_MONTH, CE_Y + 1200,
+  c(list(leader_seg(KARPATHY_MONTH, y_drop, KARPATHY_MONTH, CE_Y,
                     arrow_head = TRUE)),
     karpathy_head(KARPATHY_MONTH, y_img, y_txt))
 }
