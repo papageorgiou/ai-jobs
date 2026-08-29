@@ -125,14 +125,15 @@ CE_Y <- ce_anchor$roll_avg
 IMG_SIZE <- 0.135   # was 0.10; the face is the thing people stop scrolling for
 
 karpathy_anno <- function(x_img, y_img, y_txt, x_start, y_start, curvature,
-                          x_end = KARPATHY_MONTH + 12, y_end = CE_Y) {
+                          x_end = KARPATHY_MONTH + 24, y_end = CE_Y) {
   list(
     geom_point(data = ce_anchor, aes(month, roll_avg),
                colour = CTX_COL, size = 3.4),
-    # Head lands on the dot's centre height and just off its right edge: y_end
-    # is CE_Y exactly, x_end about a dot-radius clear of it. It used to end at
-    # CE_Y * 0.90, which on a log axis is a visible drop below the dot, so the
-    # arrow pointed at the gap under the anchor rather than at the anchor.
+    # Head lands on the dot's centre height with a gap in front of it: y_end is
+    # CE_Y exactly, x_end far enough right to clear the dot's edge by about two
+    # millimetres. Two earlier versions were wrong in opposite directions - CE_Y
+    # * 0.90 aimed the head at the empty space below the anchor, then +12 days
+    # put the tip hard against the dot with nothing between them.
     # Drawn before the end labels so that if the curve ever runs long it passes
     # under them, not over.
     geom_curve(aes(x = x_start, y = y_start, xend = x_end, yend = y_end),

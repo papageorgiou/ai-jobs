@@ -35,3 +35,9 @@ report.typ
 report_files/
 report_v2.typ
 report_v2_files/
+
+# Screen recordings and video dropped into the project root. Two of these
+# (99MB and 227MB) were swept into a commit by `git add -A` and rejected by
+# GitHub's 100MB file limit.
+*.mov
+*.mp4
