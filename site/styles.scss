@@ -66,10 +66,14 @@ a {
   text-underline-offset: 2px;
 }
 
+// Sits mid-article now rather than in the footer, so it needs a light
+// container to read as an aside instead of as body copy.
 .disclosure {
   font-size: 0.85rem;
   color: #7a828a;
-  line-height: 1.5;
-  margin-top: 1.5rem;
+  line-height: 1.55;
+  border-left: 2px solid #E2D6CB;
+  padding-left: 0.9rem;
+  margin: 2rem 0 0;
   max-width: 40rem;
 }
