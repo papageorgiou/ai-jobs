@@ -77,3 +77,18 @@ a {
   margin: 2rem 0 0;
   max-width: 40rem;
 }
+
+// Closing author block. Reads as an aside rather than a continuation of the
+// argument, so it gets its own tinted panel instead of the disclosure rule.
+.about {
+  background: #F6EFE8;
+  border: 1px solid #E2D6CB;
+  border-radius: 4px;
+  padding: 1.2rem 1.4rem;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+}
+
+.about p:last-child {
+  margin-bottom: 0;
+}

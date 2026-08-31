@@ -101,3 +101,13 @@ The code, the title list and every chart are in the [repository](https://github.
 ::: {.callout-note appearance="simple"}
 **Source.** Google Ads Keyword Planner API, US, English. 1,053 titles pulled 2026-08-20, covering August 2022 to July 2026. 289 titles cleared the modelling threshold. Analysis in Python, charts in R.
 :::
+
+## About me
+
+::: {.about}
+I am a consumer search trends analyst. I have spent over 15 years working with search signals, from three different vantage points: digital marketing, data science and market research.
+
+Search data is useful well beyond the question in this article. It sizes demand, tracks a category before it has a settled name, and reads a market in close to real time.
+
+If you would like help with search signals, [get in touch through my contact form](https://www.alex-papageo.com/contact.html).
+:::
