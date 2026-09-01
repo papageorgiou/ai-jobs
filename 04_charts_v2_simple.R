@@ -162,7 +162,7 @@ p2 <- ggplot() +
   scale_colour_manual(values = unname(pal)) +
   scale_y_log10(labels = label_comma()) +
   scale_x_date(expand = expansion(mult = c(0.02, 0.22))) +
-  labs(title = "A few titles account for nearly all the growth",
+  labs(title = '"Forward deployed engineer" is now America\'s most-searched AI career title',
        x = NULL,
        y = glue("Searches per month, {nrow(career)} AI career terms ",
                 "(3-month rolling average, log scale)"),
