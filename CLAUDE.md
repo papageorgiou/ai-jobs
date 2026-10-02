@@ -196,3 +196,18 @@ using the function clusters as a headline.
 `get_volumes` accepts up to 10,000 keywords per request, so the whole 1,052-title universe is a
 single call. Always state the planned request count and get a go-ahead before pulling, even when
 it is cheap.
+
+## Keeping STATUS.md current
+
+`STATUS.md` is the one page that says where the project stands now: what waits on Alex, what
+is blocked, what comes next, what was delivered to whom. Alex's morning brief reads it. Read
+it at the start of a session.
+
+- When you finish a piece of work, update `STATUS.md` before the final commit, in the same
+  commit or the one after it. Change the sections the work touched and the `Last updated` line.
+- Overwrite it, never append. Git keeps the history. Keep it to about one screen.
+- Keep the headings in every version. Write "nothing" under a heading that has nothing, so an
+  empty section is never mistaken for one nobody filled in.
+- Mark inference as inference ("probably", "not confirmed"). Record a delivery only when Alex
+  says it happened.
+- Move a "Needs Alex" item out once he answers.
